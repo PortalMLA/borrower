@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<title>Portal de préstamo · Miami Lending Advisors</title>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+  :root{--navy:#13294B;--navy-2:#2E4A73;--sobre-navy:#D6DEEA;--fondo:#F4F6F8;--tarjeta:#FFFFFF;--texto:#2B3440;--suave:#5B6573;--linea:#E8ECF0;--gris:#B6BFCA;
+    --ok-bg:#E3F2EA;--ok:#14532D;--rev-bg:#E6EEFB;--rev:#1E3A8A;--pen-bg:#FDEBD8;--pen:#7C2D12;--nota:#FEF6EE}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:'Manrope','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.45}
+  .app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;gap:16px;padding-bottom:24px}
+  header{background:var(--navy);color:#fff;padding:28px 20px 24px;display:flex;flex-direction:column;gap:6px}
+  .marca{font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--sobre-navy)}
+  h1{margin:6px 0 0;font-size:28px;font-weight:700;line-height:1.2}
+  header p{margin:0;color:var(--sobre-navy)}
+  .tarjeta{margin:0 16px;background:var(--tarjeta);border-radius:14px;padding:20px}
+  h2{margin:0 0 12px;font-size:17px;font-weight:700;color:var(--navy)}
+  .barra{height:10px;background:var(--linea);border-radius:999px;overflow:hidden}
+  .barra div{height:10px;background:var(--navy);border-radius:999px;transition:width .4s}
+  .fila{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .datos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .dato small{display:block;color:var(--suave);font-size:13px}
+  .dato strong{font-size:17px;color:var(--navy)}
+  .paso{display:flex;gap:14px;align-items:flex-start}
+  .eje{display:flex;flex-direction:column;align-items:center}
+  .punto{width:22px;height:22px;border-radius:50%;border:2px solid var(--gris);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .punto.hecho{background:var(--navy);border-color:var(--navy);color:#fff}
+  .punto.actual{border:3px solid var(--navy);background:#fff}
+  .linea{width:2px;height:26px;background:#D3D9E0}
+  .linea.hecha{background:var(--navy)}
+  .paso .t{font-weight:600;color:var(--suave)}
+  .paso .t.on{color:var(--texto)} .paso .t.actual{color:var(--navy);font-weight:700}
+  .paso small{display:block;color:var(--suave);font-size:13px;font-weight:500}
+  .grupo{font-size:13px;font-weight:700;color:var(--suave);margin:16px 0 2px}
+  .doc{padding:12px 0;border-top:1px solid var(--linea)}
+  .pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .Aprobado{background:var(--ok-bg);color:var(--ok)} .Revision{background:var(--rev-bg);color:var(--rev)} .Pendiente{background:var(--pen-bg);color:var(--pen)}
+  .nota{margin-top:8px;font-size:13px;color:var(--pen);background:var(--nota);padding:8px 10px;border-radius:8px}
+  .boton{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;width:100%;border:none;border-radius:12px;background:var(--navy);color:#fff;font:inherit;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer}
+  .boton:hover{background:#0B1A30}
+  .boton.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy);min-height:44px;font-size:14px}
+  .boton.sec:hover{background:var(--fondo)}
+  .ayuda{margin:8px 0 0;font-size:13px;color:var(--suave);text-align:center}
+  .contacto{display:flex;flex-direction:column;gap:12px}
+  .persona{display:flex;gap:12px;align-items:center}
+  .ini{width:44px;height:44px;border-radius:50%;background:#DCE4F0;color:var(--navy);font-weight:700;display:flex;align-items:center;justify-content:center}
+  .acciones{display:flex;gap:8px}
+  footer{margin:4px 20px 0;font-size:12px;color:var(--suave);text-align:center;line-height:1.6}
+  label{font-weight:700;color:var(--navy)}
+  input{width:100%;min-height:52px;border:1.5px solid var(--gris);border-radius:10px;padding:0 14px;font:inherit;font-size:20px;letter-spacing:.25em;color:var(--texto);margin:10px 0 14px}
+  input:focus,.boton:focus-visible,a:focus-visible{outline:3px solid #7FA3D6;outline-offset:2px}
+  .error{color:var(--pen);font-size:14px;margin:0 0 12px;min-height:20px}
+  .oculto{display:none}
+  .cargando{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+var API_URL = 'https://script.google.com/macros/s/AKfycbys4KDIrbsHfl1kKYP8V3YjDoTzSq8o8uWv2EaTwWj7uTForHFO5C70d4SZlmA3hFCpyQ/exec';
+var PORTAL_ID = (new URLSearchParams(window.location.search).get('c') || '').replace(/[^A-Za-z0-9]/g,'').slice(0,20);
+var codigoGuardado = '';
+var T = {
+  es:{marca:'Miami Lending Advisors',titulo:'Tu portal de préstamo',intro:'Revisa qué documentos faltan y en qué etapa va tu proceso.',
+      codigo:'Código de acceso',entrar:'Entrar',ayudaCodigo:'Tu código te lo envía Daniela por WhatsApp o email.',
+      errCodigo:'El código no es correcto. Revísalo e intenta de nuevo.',errBloq:'Demasiados intentos. Espera unos minutos e intenta de nuevo.',
+      errInactivo:'Este portal ya no está activo. Si necesitas algo, escríbenos.',errLink:'Este link no está completo. Usa el link que te enviamos.',errRed:'No pudimos conectar. Revisa tu internet e intenta de nuevo.',
+      hola:'Hola, ',avance:'Así va tu préstamo',aprobados:' de ',aprobados2:' documentos aprobados',monto:'Monto del préstamo',cierre:'Cierre estimado',
+      etapas:'Etapas del proceso',completado:'Completado',estasAqui:'Estás aquí',docs:'Tus documentos',pendientes:' pendientes',pendiente1:' pendiente',
+      subir:'Subir documentos a mi carpeta',ayudaSubir:'Se abre tu carpeta privada en Google Drive.',equipo:'Tu equipo en MLA',actualizar:'Ver cambios recientes',
+      privado:'Este portal es privado. No compartas tu link ni tu código.',
+      estados:{'Pendiente':'Pendiente','En revisión':'En revisión','Aprobado':'Aprobado'}},
+  en:{marca:'Miami Lending Advisors',titulo:'Your loan portal',intro:'See which documents are missing and where your loan stands.',
+      codigo:'Access code',entrar:'Enter',ayudaCodigo:'Daniela sends you your code by WhatsApp or email.',
+      errCodigo:'That code is not correct. Please check it and try again.',errBloq:'Too many attempts. Please wait a few minutes and try again.',
+      errInactivo:'This portal is no longer active. Contact us if you need anything.',errLink:'This link is incomplete. Please use the link we sent you.',errRed:'We could not connect. Check your internet and try again.',
+      hola:'Hi, ',avance:'Your loan progress',aprobados:' of ',aprobados2:' documents approved',monto:'Loan amount',cierre:'Estimated closing',
+      etapas:'Loan stages',completado:'Completed',estasAqui:'You are here',docs:'Your documents',pendientes:' pending',pendiente1:' pending',
+      subir:'Upload documents to my folder',ayudaSubir:'Opens your private Google Drive folder.',equipo:'Your MLA team',actualizar:'Check for updates',
+      privado:'This portal is private. Do not share your link or code.',
+      estados:{'Pendiente':'Pending','En revisión':'In review','Aprobado':'Approved'}}
+};
+var ETAPAS = ['Solicitud recibida','Reunión de documentos','Enviado al banco','Avalúo y condiciones','Aprobación final','Cierre'];
+var ETAPAS_EN = ['Application received','Gathering documents','Sent to lender','Appraisal and conditions','Final approval','Closing'];
+var CATEGORIAS = ['Identificación','Ingresos','Fondos','Empresa (LLC)','Compra','Otras propiedades','Para firmar'];
+var CATEGORIAS_EN = {'Identificación':'Identification','Ingresos':'Income','Fondos':'Funds','Empresa (LLC)':'Your company (LLC)','Compra':'The purchase','Otras propiedades':'Other properties','Para firmar':'To sign'};
+
+function el(tag, clase, texto){var n=document.createElement(tag);if(clase)n.className=clase;if(texto!=null)n.textContent=texto;return n;}
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
+function claseEstado(e){var n=norm(e);return n.indexOf('aprob')===0?'Aprobado':(n.indexOf('revis')>-1?'Revision':'Pendiente');}
+function fechaBonita(iso,idioma){if(!iso)return '—';var p=iso.split('-');var d=new Date(Number(p[0]),Number(p[1])-1,Number(p[2]));
+  return d.toLocaleDateString(idioma==='en'?'en-US':'es-ES',{day:'numeric',month:'long',year:'numeric'});}
+function dinero(n){return n?'$'+Math.round(n).toLocaleString('en-US'):'—';}
+
+/* ---------- Pantalla de acceso ---------- */
+function pantallaAcceso(mensaje){
+  var t=T.es, app=document.getElementById('app'); app.innerHTML='';
+  var h=el('header'); h.appendChild(el('span','marca',t.marca)); h.appendChild(el('h1',null,t.titulo)); h.appendChild(el('p',null,t.intro)); app.appendChild(h);
+  var c=el('section','tarjeta');
+  var lab=el('label',null,t.codigo); lab.setAttribute('for','codigo'); c.appendChild(lab);
+  var inp=el('input'); inp.id='codigo'; inp.type='text'; inp.inputMode='numeric'; inp.autocomplete='one-time-code'; inp.maxLength=6; inp.placeholder='••••••'; c.appendChild(inp);
+  var err=el('p','error',mensaje||''); err.setAttribute('role','alert'); c.appendChild(err);
+  var b=el('button','boton',t.entrar); b.type='button'; c.appendChild(b);
+  c.appendChild(el('p','ayuda',t.ayudaCodigo)); app.appendChild(c);
+  app.appendChild(pie(t,''));
+  if(!PORTAL_ID){err.textContent=t.errLink;b.disabled=true;return;}
+  function enviar(){var cod=inp.value.replace(/\D/g,''); if(cod.length<6){err.textContent=t.errCodigo;return;}
+    c.classList.add('cargando'); pedir(cod,function(r){c.classList.remove('cargando');
+      if(r.ok){codigoGuardado=cod;pantallaPortal(r.portal);}else{err.textContent=r.motivo==='bloqueado'?t.errBloq:(r.motivo==='inactivo'?t.errInactivo:(r.motivo==='red'?t.errRed:t.errCodigo));}})}
+  b.addEventListener('click',enviar); inp.addEventListener('keydown',function(e){if(e.key==='Enter')enviar();}); inp.focus();
+}
+
+function pedir(codigo, listo){
+  fetch(API_URL,{method:'POST',credentials:'omit',redirect:'follow',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({c:PORTAL_ID,codigo:codigo})})
+  .then(function(r){return r.json();})
+  .then(function(r){listo(r&&typeof r.ok==='boolean'?r:{ok:false,motivo:'red'});})
+  .catch(function(){listo({ok:false,motivo:'red'});});
+}
+
+/* ---------- Portal ---------- */
+function pantallaPortal(p){
+  var t=T[p.idioma]||T.es, en=p.idioma==='en'; document.documentElement.lang=p.idioma;
+  var app=document.getElementById('app'); app.innerHTML='';
+  var docs=p.documentos, total=docs.length;
+  var ok=docs.filter(function(d){return claseEstado(d.estado)==='Aprobado';}).length;
+  var pend=docs.filter(function(d){return claseEstado(d.estado)==='Pendiente';}).length;
+
+  var h=el('header'); h.appendChild(el('span','marca',t.marca)); h.appendChild(el('h1',null,t.hola+p.cliente)); app.appendChild(h);
+
+  // Avance
+  var a=el('section','tarjeta'); a.appendChild(el('h2',null,t.avance));
+  var barra=el('div','barra'), lleno=el('div'); lleno.style.width=(total?Math.round(ok/total*100):0)+'%'; barra.appendChild(lleno); a.appendChild(barra);
+  var f=el('p',null); f.style.margin='10px 0 0'; var s=el('strong',null,ok+t.aprobados+total); s.style.color='var(--navy)'; f.appendChild(s); f.appendChild(document.createTextNode(t.aprobados2)); a.appendChild(f);
+  var datos=el('div','datos');
+  [[t.monto,dinero(p.monto)],[t.cierre,fechaBonita(p.cierre,p.idioma)]].forEach(function(x){var d=el('div','dato');d.appendChild(el('small',null,x[0]));d.appendChild(el('strong',null,x[1]));datos.appendChild(d);});
+  a.appendChild(datos); app.appendChild(a);
+
+  // Etapas
+  var idx=ETAPAS.map(norm).indexOf(norm(p.etapa));
+  var e=el('section','tarjeta'); e.appendChild(el('h2',null,t.etapas));
+  ETAPAS.forEach(function(nombre,i){
+    var paso=el('div','paso'), eje=el('div','eje');
+    var pt=el('div','punto'+(i<idx?' hecho':(i===idx?' actual':'')), i<idx?'✓':''); eje.appendChild(pt);
+    if(i<ETAPAS.length-1) eje.appendChild(el('div','linea'+(i<idx?' hecha':'')));
+    var txt=el('div','t'+(i===idx?' actual':(i<idx?' on':'')), en?ETAPAS_EN[i]:nombre);
+    if(i<idx) txt.appendChild(el('small',null,t.completado));
+    if(i===idx) txt.appendChild(el('small',null,t.estasAqui));
+    paso.appendChild(eje); paso.appendChild(txt); e.appendChild(paso);
+  });
+  app.appendChild(e);
+
+  // Documentos
+  var d=el('section','tarjeta'); var cab=el('div','fila'); cab.appendChild(el('h2',null,t.docs));
+  if(pend>0){var pp=el('span','pill Pendiente',pend+(pend===1?t.pendiente1:t.pendientes)); cab.appendChild(pp);} d.appendChild(cab);
+  var cats=CATEGORIAS.slice(); docs.forEach(function(x){if(cats.indexOf(x.categoria)===-1)cats.push(x.categoria);});
+  cats.forEach(function(cat){
+    var lista=docs.filter(function(x){return x.categoria===cat;}); if(!lista.length)return;
+    d.appendChild(el('div','grupo',en?(CATEGORIAS_EN[cat]||cat):(cat||'Otros')));
+    lista.forEach(function(x){
+      var item=el('div','doc'), fila=el('div','fila'); fila.appendChild(el('span',null,x.nombre));
+      var ce=claseEstado(x.estado); fila.appendChild(el('span','pill '+ce,t.estados[ce==='Revision'?'En revisión':ce]));
+      item.appendChild(fila); if(x.nota) item.appendChild(el('div','nota',x.nota)); d.appendChild(item);
+    });
+  });
+  if(p.carpeta){var sp=el('div'); sp.style.marginTop='18px'; var up=el('a','boton',t.subir); up.href=p.carpeta; up.target='_blank'; up.rel='noopener'; sp.appendChild(up); sp.appendChild(el('p','ayuda',t.ayudaSubir)); d.appendChild(sp);}
+  app.appendChild(d);
+
+  // Equipo
+  var q=el('section','tarjeta'); q.appendChild(el('h2',null,t.equipo)); var lc=el('div','contacto');
+  p.contactos.forEach(function(k){
+    var per=el('div','persona'); per.appendChild(el('div','ini',k.nombre.split(' ').map(function(w){return w[0];}).slice(0,2).join('')));
+    var info=el('div'); var nm=el('div',null,k.nombre); nm.style.fontWeight='700'; info.appendChild(nm); var rl=el('div',null,k.rol); rl.style.cssText='font-size:13px;color:var(--suave)'; info.appendChild(rl); per.appendChild(info); lc.appendChild(per);
+    var acc=el('div','acciones');
+    if(k.whatsapp){var w=el('a','boton sec','WhatsApp'); w.href='https://wa.me/'+k.whatsapp; w.target='_blank'; w.rel='noopener'; acc.appendChild(w);}
+    if(k.email){var m=el('a','boton sec','Email'); m.href='mailto:'+k.email; acc.appendChild(m);}
+    if(acc.children.length) lc.appendChild(acc);
+  });
+  q.appendChild(lc); app.appendChild(q);
+
+  // Actualizar
+  var act=el('div'); act.style.margin='0 16px'; var bu=el('button','boton sec',t.actualizar); bu.type='button';
+  bu.addEventListener('click',function(){act.classList.add('cargando'); pedir(codigoGuardado,function(r){act.classList.remove('cargando'); if(r.ok)pantallaPortal(r.portal); else pantallaAcceso(r.motivo==='inactivo'?t.errInactivo:'');});});
+  act.appendChild(bu); app.appendChild(act);
+
+  app.appendChild(pie(t,p.nmls)); window.scrollTo(0,0);
+}
+
+function pie(t,nmls){var f=el('footer');
+  f.appendChild(el('div',null,'Miami Lending Advisors'+(nmls?' · NMLS '+nmls:''))); f.appendChild(el('div',null,'Equal Housing Opportunity'));
+  var pr=el('div',null,t.privado); pr.style.marginTop='6px'; f.appendChild(pr); return f;}
+
+pantallaAcceso();
+</script>
+</body>
+</html>
