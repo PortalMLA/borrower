@@ -61,6 +61,13 @@
   input:focus,.boton:focus-visible,a:focus-visible{outline:3px solid #7FA3D6;outline-offset:2px}
   .error{color:var(--pen);font-size:14px;margin:0 0 12px;min-height:20px}
   .oculto{display:none}
+  .prop{border:1.5px solid var(--gris);border-radius:12px;padding:16px;margin-top:14px}
+  .prop h3{margin:0 0 10px;font-size:16px;color:var(--navy)}
+  .prop label{display:block;font-size:13px;color:var(--suave);font-weight:600}
+  .prop input{font-size:16px;letter-spacing:normal;min-height:46px;margin:4px 0 10px}
+  .prop .msg{font-size:13px;margin:6px 0 0;min-height:18px}
+  .prop .doc:last-child{border-bottom:0}
+  .agregar{margin-top:14px}
   .cargando{opacity:.6;pointer-events:none}
 </style>
 </head>
@@ -80,7 +87,11 @@ var T = {
       etapas:'Etapas del proceso',completado:'Completado',estasAqui:'Estás aquí',docs:'Tus documentos',pendientes:' pendientes',pendiente1:' pendiente',
       subir:'Subir documentos a mi carpeta',ayudaSubir:'Se abre tu carpeta privada en Google Drive.',equipo:'Tu equipo en MLA',actualizar:'Ver cambios recientes',
       privado:'Este portal es privado. No compartas tu link ni tu código.',
-      estados:{'Pendiente':'Pendiente','En revisión':'En revisión','Aprobado':'Aprobado'}},
+      estados:{'Pendiente':'Pendiente','En revisión':'En revisión','Aprobado':'Aprobado'},
+      props:'Tus propiedades',propsIntro:'Escribe la dirección completa y el valor aproximado de cada propiedad. Debajo de cada una están sus documentos.',
+      direccion:'Dirección completa',valor:'Valor aproximado',phValor:'Ej.: USD 350,000',guardar:'Guardar',guardado:'Guardado ✓',
+      agregar:'+ Agregar otra residencia',agregarBtn:'Agregar residencia',cancelar:'Cancelar',principal:'Residencia principal',nueva:'Nueva residencia',
+      docsProp:'Documentos de esta propiedad',errDir:'Escribe la dirección completa.',errMax:'Ya llegaste al máximo de propiedades. Escríbenos si tienes más.',errGuardar:'No se pudo guardar. Intenta de nuevo.'},
   en:{privLink:'Privacy Policy',marca:'Miami Lending Advisors',titulo:'Your loan portal',intro:'See which documents are missing and where your loan stands.',
       codigo:'Access code',entrar:'Enter',ayudaCodigo:'Personal, non-transferable code for exclusive use of this portal.',
       errCodigo:'That code is not correct. Please check it and try again.',errBloq:'Too many attempts. Please wait a few minutes and try again.',
@@ -89,7 +100,11 @@ var T = {
       etapas:'Loan stages',completado:'Completed',estasAqui:'You are here',docs:'Your documents',pendientes:' pending',pendiente1:' pending',
       subir:'Upload documents to my folder',ayudaSubir:'Opens your private Google Drive folder.',equipo:'Your MLA team',actualizar:'Check for updates',
       privado:'This portal is private. Do not share your link or code.',
-      estados:{'Pendiente':'Pending','En revisión':'In review','Aprobado':'Approved'}}
+      estados:{'Pendiente':'Pending','En revisión':'In review','Aprobado':'Approved'},
+      props:'Your properties',propsIntro:'Enter the full address and approximate value of each property. Its documents are listed below it.',
+      direccion:'Full address',valor:'Approximate value',phValor:'E.g. USD 350,000',guardar:'Save',guardado:'Saved ✓',
+      agregar:'+ Add another residence',agregarBtn:'Add residence',cancelar:'Cancel',principal:'Primary residence',nueva:'New residence',
+      docsProp:'Documents for this property',errDir:'Please enter the full address.',errMax:'You have reached the maximum number of properties. Contact us if you have more.',errGuardar:'Could not save. Please try again.'}
 };
 var ETAPAS = ['Solicitud recibida','Reunión de documentos','Enviado al banco','Avalúo y condiciones','Aprobación final','Cierre'];
 var ETAPAS_VER = ['Solicitud recibida','Recopilación de documentos','Análisis de crédito','Avalúo y condiciones','Aprobación final','Cierre'];
@@ -131,8 +146,47 @@ function pedir(codigo, listo){
   .catch(function(){listo({ok:false,motivo:'red'});});
 }
 
+function accion(datos, listo){
+  datos.c=PORTAL_ID; datos.codigo=codigoGuardado;
+  fetch(API_URL,{method:'POST',credentials:'omit',redirect:'follow',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(datos)})
+  .then(function(r){return r.json();})
+  .then(function(r){listo(r&&typeof r.ok==='boolean'?r:{ok:false,motivo:'red'});})
+  .catch(function(){listo({ok:false,motivo:'red'});});
+}
+
+function filaDoc(x,t){
+  var item=el('div','doc'), fila=el('div','fila'); fila.appendChild(el('span',null,x.nombre));
+  var ce=claseEstado(x.estado); fila.appendChild(el('span','pill '+ce,t.estados[ce==='Revision'?'En revisión':ce]));
+  item.appendChild(fila); if(x.nota) item.appendChild(el('div','nota',x.nota)); return item;
+}
+
+// Una propiedad: título, dirección y valor que escribe el cliente, y sus documentos
+function bloquePropiedad(prop, docs, t, alCancelar){
+  var b=el('div','prop'); var nueva=!prop.id;
+  b.appendChild(el('h3',null,prop.nombre));
+  var l1=el('label',null,t.direccion); var i1=el('input'); i1.type='text'; i1.maxLength=300; i1.value=prop.direccion||''; i1.autocomplete='street-address';
+  var id1='dir_'+(prop.id||'nueva'); i1.id=id1; l1.setAttribute('for',id1); b.appendChild(l1); b.appendChild(i1);
+  var l2=el('label',null,t.valor); var i2=el('input'); i2.type='text'; i2.maxLength=60; i2.value=prop.valor||''; i2.placeholder=t.phValor;
+  var id2='val_'+(prop.id||'nueva'); i2.id=id2; l2.setAttribute('for',id2); b.appendChild(l2); b.appendChild(i2);
+  var acc=el('div','acciones'); var g=el('button','boton',nueva?t.agregarBtn:t.guardar); g.type='button'; acc.appendChild(g);
+  if(alCancelar){var c=el('button','boton sec',t.cancelar); c.type='button'; c.addEventListener('click',alCancelar); acc.appendChild(c);}
+  b.appendChild(acc); var msg=el('p','msg'); msg.setAttribute('aria-live','polite'); b.appendChild(msg);
+  g.addEventListener('click',function(){
+    var dir=i1.value.trim(); if(!dir){msg.style.color='var(--pen)'; msg.textContent=t.errDir; i1.focus(); return;}
+    b.classList.add('cargando'); msg.textContent='';
+    accion({accion:nueva?'agregarPropiedad':'guardarPropiedad',propiedad:prop.id||'',direccion:dir,valor:i2.value.trim()},function(r){
+      b.classList.remove('cargando');
+      if(r.ok){ if(nueva){pantallaPortal(r.portal,true);} else {msg.style.color='var(--ok)'; msg.textContent=t.guardado;} }
+      else {msg.style.color='var(--pen)'; msg.textContent=r.motivo==='maxPropiedades'?t.errMax:t.errGuardar;}
+    });
+  });
+  if(docs.length){ b.appendChild(el('div','grupo',t.docsProp)); docs.forEach(function(x){b.appendChild(filaDoc(x,t));}); }
+  return b;
+}
+
 /* ---------- Portal ---------- */
-function pantallaPortal(p){
+function pantallaPortal(p, mantener){
   var t=T[p.idioma]||T.es, en=p.idioma==='en'; document.documentElement.lang=p.idioma;
   var app=document.getElementById('app'); app.innerHTML='';
   var docs=p.documentos, total=docs.length;
@@ -166,16 +220,27 @@ function pantallaPortal(p){
   // Documentos
   var d=el('section','tarjeta'); var cab=el('div','fila'); cab.appendChild(el('h2',null,t.docs));
   if(pend>0){var pp=el('span','pill Pendiente',pend+(pend===1?t.pendiente1:t.pendientes)); cab.appendChild(pp);} d.appendChild(cab);
-  var cats=CATEGORIAS.slice(); docs.forEach(function(x){if(cats.indexOf(x.categoria)===-1)cats.push(x.categoria);});
+  var props=p.propiedades||[], idsProp=props.map(function(x){return x.id;});
+  var generales=docs.filter(function(x){return !x.propiedad||idsProp.indexOf(x.propiedad)===-1;});
+  var cats=CATEGORIAS.slice(); generales.forEach(function(x){if(cats.indexOf(x.categoria)===-1)cats.push(x.categoria);});
   cats.forEach(function(cat){
-    var lista=docs.filter(function(x){return x.categoria===cat;}); if(!lista.length)return;
+    var lista=generales.filter(function(x){return x.categoria===cat;}); if(!lista.length)return;
     d.appendChild(el('div','grupo',en?(CATEGORIAS_EN[cat]||cat):(cat||'Otros')));
-    lista.forEach(function(x){
-      var item=el('div','doc'), fila=el('div','fila'); fila.appendChild(el('span',null,x.nombre));
-      var ce=claseEstado(x.estado); fila.appendChild(el('span','pill '+ce,t.estados[ce==='Revision'?'En revisión':ce]));
-      item.appendChild(fila); if(x.nota) item.appendChild(el('div','nota',x.nota)); d.appendChild(item);
-    });
+    lista.forEach(function(x){ d.appendChild(filaDoc(x,t)); });
   });
+
+  // Propiedades
+  var zp=el('div'); zp.style.marginTop='22px'; zp.appendChild(el('h2',null,t.props)); zp.appendChild(el('p','ayuda',t.propsIntro));
+  props.forEach(function(pr){ zp.appendChild(bloquePropiedad(pr, docs.filter(function(x){return x.propiedad===pr.id;}), t)); });
+  if(!props.length){ zp.appendChild(bloquePropiedad({nombre:t.principal}, [], t)); }
+  else {
+    var cont=el('div'); var ag=el('button','boton sec agregar',t.agregar); ag.type='button';
+    ag.addEventListener('click',function(){ ag.classList.add('oculto');
+      var nb=bloquePropiedad({nombre:t.nueva}, [], t, function(){ cont.removeChild(nb); ag.classList.remove('oculto'); });
+      cont.appendChild(nb); nb.querySelector('input').focus(); });
+    zp.appendChild(cont); zp.appendChild(ag);
+  }
+  d.appendChild(zp);
   if(p.carpeta){var sp=el('div'); sp.style.marginTop='18px'; var up=el('a','boton',t.subir); up.href=p.carpeta; up.target='_blank'; up.rel='noopener'; sp.appendChild(up); sp.appendChild(el('p','ayuda',t.ayudaSubir)); d.appendChild(sp);}
   app.appendChild(d);
 
@@ -196,7 +261,7 @@ function pantallaPortal(p){
   bu.addEventListener('click',function(){act.classList.add('cargando'); pedir(codigoGuardado,function(r){act.classList.remove('cargando'); if(r.ok)pantallaPortal(r.portal); else pantallaAcceso(r.motivo==='inactivo'?t.errInactivo:'');});});
   act.appendChild(bu); app.appendChild(act);
 
-  app.appendChild(pie(t,p.nmls)); window.scrollTo(0,0);
+  app.appendChild(pie(t,p.nmls)); if(!mantener) window.scrollTo(0,0);
 }
 
 function pie(t,nmls){var f=el('footer');
