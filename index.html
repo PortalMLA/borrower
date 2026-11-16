@@ -182,6 +182,7 @@ function bloquePropiedad(prop, docs, t, alCancelar, tipo){
     b.classList.add('cargando'); msg.textContent='';
     accion({accion:nueva?'agregarPropiedad':'guardarPropiedad',tipo:tipo,propiedad:prop.id||'',direccion:dir,valor:i2.value.trim()},function(r){
       b.classList.remove('cargando');
+      if(r.ok&&(!r.portal||!r.portal.propiedades)) r={ok:false,motivo:'version'};
       if(r.ok){ if(nueva){pantallaPortal(r.portal,true);} else {msg.style.color='var(--ok)'; msg.textContent=t.guardado; if(tipo==='Principal')h3.textContent=t.principal+': '+dir;} }
       else {msg.style.color='var(--pen)'; msg.textContent=r.motivo==='maxPropiedades'?t.errMax:t.errGuardar;}
     });
