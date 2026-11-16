@@ -68,6 +68,8 @@
   .prop .msg{font-size:13px;margin:6px 0 0;min-height:18px}
   .prop .doc:last-child{border-bottom:0}
   .agregar{margin-top:14px}
+  .subtit{font-weight:700;color:var(--navy);font-size:15px;margin:22px 0 2px}
+  .subtit + .ayuda{text-align:left;margin:0}
   .cargando{opacity:.6;pointer-events:none}
 </style>
 </head>
@@ -90,7 +92,8 @@ var T = {
       estados:{'Pendiente':'Pendiente','En revisión':'En revisión','Aprobado':'Aprobado'},
       props:'Tus propiedades',propsIntro:'Escribe la dirección completa y el valor aproximado de cada propiedad. Debajo de cada una están sus documentos.',
       direccion:'Dirección completa',valor:'Valor aproximado',phValor:'Ej.: USD 350,000',guardar:'Guardar',guardado:'Guardado ✓',
-      agregar:'+ Agregar otra residencia',agregarBtn:'Agregar residencia',cancelar:'Cancelar',principal:'Residencia principal',nueva:'Nueva residencia',
+      agregarUS:'+ Agregar propiedad en EE.UU.',agregarPais:'+ Agregar propiedad en tu país',agregarBtn:'Agregar propiedad',cancelar:'Cancelar',principal:'Residencia principal',nueva:'Nueva propiedad',
+      grupoUS:'Otras propiedades en EE.UU.',grupoPais:'Otras propiedades en tu país',sinProps:'Si no tienes, no agregues nada.',
       docsProp:'Documentos de esta propiedad',errDir:'Escribe la dirección completa.',errMax:'Ya llegaste al máximo de propiedades. Escríbenos si tienes más.',errGuardar:'No se pudo guardar. Intenta de nuevo.'},
   en:{privLink:'Privacy Policy',marca:'Miami Lending Advisors',titulo:'Your loan portal',intro:'See which documents are missing and where your loan stands.',
       codigo:'Access code',entrar:'Enter',ayudaCodigo:'Personal, non-transferable code for exclusive use of this portal.',
@@ -103,7 +106,8 @@ var T = {
       estados:{'Pendiente':'Pending','En revisión':'In review','Aprobado':'Approved'},
       props:'Your properties',propsIntro:'Enter the full address and approximate value of each property. Its documents are listed below it.',
       direccion:'Full address',valor:'Approximate value',phValor:'E.g. USD 350,000',guardar:'Save',guardado:'Saved ✓',
-      agregar:'+ Add another residence',agregarBtn:'Add residence',cancelar:'Cancel',principal:'Primary residence',nueva:'New residence',
+      agregarUS:'+ Add a U.S. property',agregarPais:'+ Add a property in your country',agregarBtn:'Add property',cancelar:'Cancel',principal:'Primary residence',nueva:'New property',
+      grupoUS:'Other properties in the U.S.',grupoPais:'Other properties in your country',sinProps:'If you have none, leave this empty.',
       docsProp:'Documents for this property',errDir:'Please enter the full address.',errMax:'You have reached the maximum number of properties. Contact us if you have more.',errGuardar:'Could not save. Please try again.'}
 };
 var ETAPAS = ['Solicitud recibida','Reunión de documentos','Enviado al banco','Avalúo y condiciones','Aprobación final','Cierre'];
@@ -162,22 +166,23 @@ function filaDoc(x,t){
 }
 
 // Una propiedad: título, dirección y valor que escribe el cliente, y sus documentos
-function bloquePropiedad(prop, docs, t, alCancelar){
-  var b=el('div','prop'); var nueva=!prop.id;
-  b.appendChild(el('h3',null,prop.nombre));
+function bloquePropiedad(prop, docs, t, alCancelar, tipo){
+  var b=el('div','prop'); var nueva=!prop.id; tipo=tipo||prop.tipo||'País';
+  var titulo=prop.nombre; if(tipo==='Principal'){titulo=t.principal+(prop.direccion?': '+prop.direccion:'');}
+  var h3=el('h3',null,titulo); b.appendChild(h3);
   var l1=el('label',null,t.direccion); var i1=el('input'); i1.type='text'; i1.maxLength=300; i1.value=prop.direccion||''; i1.autocomplete='street-address';
   var id1='dir_'+(prop.id||'nueva'); i1.id=id1; l1.setAttribute('for',id1); b.appendChild(l1); b.appendChild(i1);
   var l2=el('label',null,t.valor); var i2=el('input'); i2.type='text'; i2.maxLength=60; i2.value=prop.valor||''; i2.placeholder=t.phValor;
   var id2='val_'+(prop.id||'nueva'); i2.id=id2; l2.setAttribute('for',id2); b.appendChild(l2); b.appendChild(i2);
-  var acc=el('div','acciones'); var g=el('button','boton',nueva?t.agregarBtn:t.guardar); g.type='button'; acc.appendChild(g);
+  var acc=el('div','acciones'); var g=el('button','boton',(nueva&&tipo!=='Principal')?t.agregarBtn:t.guardar); g.type='button'; acc.appendChild(g);
   if(alCancelar){var c=el('button','boton sec',t.cancelar); c.type='button'; c.addEventListener('click',alCancelar); acc.appendChild(c);}
   b.appendChild(acc); var msg=el('p','msg'); msg.setAttribute('aria-live','polite'); b.appendChild(msg);
   g.addEventListener('click',function(){
     var dir=i1.value.trim(); if(!dir){msg.style.color='var(--pen)'; msg.textContent=t.errDir; i1.focus(); return;}
     b.classList.add('cargando'); msg.textContent='';
-    accion({accion:nueva?'agregarPropiedad':'guardarPropiedad',propiedad:prop.id||'',direccion:dir,valor:i2.value.trim()},function(r){
+    accion({accion:nueva?'agregarPropiedad':'guardarPropiedad',tipo:tipo,propiedad:prop.id||'',direccion:dir,valor:i2.value.trim()},function(r){
       b.classList.remove('cargando');
-      if(r.ok){ if(nueva){pantallaPortal(r.portal,true);} else {msg.style.color='var(--ok)'; msg.textContent=t.guardado;} }
+      if(r.ok){ if(nueva){pantallaPortal(r.portal,true);} else {msg.style.color='var(--ok)'; msg.textContent=t.guardado; if(tipo==='Principal')h3.textContent=t.principal+': '+dir;} }
       else {msg.style.color='var(--pen)'; msg.textContent=r.motivo==='maxPropiedades'?t.errMax:t.errGuardar;}
     });
   });
@@ -231,15 +236,20 @@ function pantallaPortal(p, mantener){
 
   // Propiedades
   var zp=el('div'); zp.style.marginTop='22px'; zp.appendChild(el('h2',null,t.props)); zp.appendChild(el('p','ayuda',t.propsIntro));
-  props.forEach(function(pr){ zp.appendChild(bloquePropiedad(pr, docs.filter(function(x){return x.propiedad===pr.id;}), t)); });
-  if(!props.length){ zp.appendChild(bloquePropiedad({nombre:t.principal}, [], t)); }
-  else {
-    var cont=el('div'); var ag=el('button','boton sec agregar',t.agregar); ag.type='button';
+  function docsDe(pr){return docs.filter(function(x){return x.propiedad===pr.id;});}
+  var principal=props.filter(function(x){return x.tipo==='Principal';})[0];
+  zp.appendChild(principal?bloquePropiedad(principal,docsDe(principal),t):bloquePropiedad({nombre:t.principal},[],t,null,'Principal'));
+  [['EE.UU.',t.grupoUS,t.agregarUS],['País',t.grupoPais,t.agregarPais]].forEach(function(g){
+    var lista=props.filter(function(x){return x.tipo===g[0];});
+    zp.appendChild(el('div','subtit',g[1]));
+    if(!lista.length) zp.appendChild(el('p','ayuda',t.sinProps));
+    lista.forEach(function(pr){ zp.appendChild(bloquePropiedad(pr,docsDe(pr),t)); });
+    var cont=el('div'); var ag=el('button','boton sec agregar',g[2]); ag.type='button';
     ag.addEventListener('click',function(){ ag.classList.add('oculto');
-      var nb=bloquePropiedad({nombre:t.nueva}, [], t, function(){ cont.removeChild(nb); ag.classList.remove('oculto'); });
+      var nb=bloquePropiedad({nombre:t.nueva},[],t,function(){ cont.removeChild(nb); ag.classList.remove('oculto'); },g[0]);
       cont.appendChild(nb); nb.querySelector('input').focus(); });
     zp.appendChild(cont); zp.appendChild(ag);
-  }
+  });
   d.appendChild(zp);
   if(p.carpeta){var sp=el('div'); sp.style.marginTop='18px'; var up=el('a','boton',t.subir); up.href=p.carpeta; up.target='_blank'; up.rel='noopener'; sp.appendChild(up); sp.appendChild(el('p','ayuda',t.ayudaSubir)); d.appendChild(sp);}
   app.appendChild(d);
