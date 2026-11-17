@@ -1,299 +1,447 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<title>Portal de préstamo · Miami Lending Advisors</title>
-<meta name="robots" content="noindex,nofollow">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal Borrower · Miami Lending Advisors</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap">
 <style>
-  :root{--navy:#13294B;--navy-2:#2E4A73;--sobre-navy:#D6DEEA;--fondo:#F4F6F8;--tarjeta:#FFFFFF;--texto:#2B3440;--suave:#5B6573;--linea:#E8ECF0;--gris:#B6BFCA;
-    --ok-bg:#E3F2EA;--ok:#14532D;--rev-bg:#E6EEFB;--rev:#1E3A8A;--pen-bg:#FDEBD8;--pen:#7C2D12;--nota:#FEF6EE}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--fondo);color:var(--texto);font-family:'Manrope','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.45}
-  .app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;gap:16px;padding-bottom:24px}
-  header{background:var(--navy);color:#fff;padding:28px 20px 24px;display:flex;flex-direction:column;gap:6px}
-  .marca{font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--sobre-navy)}
-  h1{margin:6px 0 0;font-size:28px;font-weight:700;line-height:1.2}
-  header p{margin:0;color:var(--sobre-navy)}
-  .tarjeta{margin:0 16px;background:var(--tarjeta);border-radius:14px;padding:20px}
-  h2{margin:0 0 12px;font-size:17px;font-weight:700;color:var(--navy)}
-  .barra{height:10px;background:var(--linea);border-radius:999px;overflow:hidden}
-  .barra div{height:10px;background:var(--navy);border-radius:999px;transition:width .4s}
-  .fila{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  .datos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  :root{
+    --navy:#111111; --sobre-navy:#B9C9DA; --hero:#111111;
+    --fondo:#F2F3F5; --tarjeta:#FFFFFF; --texto:#141414; --suave:#5E6672; --linea:#E3E6EA;
+    --mar:#2F6B93; --mar-bg:#E6F0F7; --azul-claro:#6FA8CF;
+    --pen:#9A3412; --pen-bg:#FDEBDC; --rev:#4B5563; --rev-bg:#ECEEF1; --nota:#FFF6EC;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --navy:#F2F4F7; --sobre-navy:#3A4656; --hero:#1C1C1C;
+      --fondo:#0B0B0C; --tarjeta:#18191B; --texto:#EDEFF2; --suave:#A3A9B2; --linea:#2A2D31;
+      --mar:#8EC0E0; --mar-bg:#1A2B38; --azul-claro:#6FA8CF; --pen:#F5A97A; --pen-bg:#3A2316; --rev:#C4C9D0; --rev-bg:#26292D; --nota:#2A2117;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --navy:#F2F4F7; --sobre-navy:#3A4656; --hero:#1C1C1C;
+    --fondo:#0B0B0C; --tarjeta:#18191B; --texto:#EDEFF2; --suave:#A3A9B2; --linea:#2A2D31;
+    --mar:#8EC0E0; --mar-bg:#1A2B38; --azul-claro:#6FA8CF; --pen:#F5A97A; --pen-bg:#3A2316; --rev:#C4C9D0; --rev-bg:#26292D; --nota:#2A2117;
+    color-scheme: dark;
+  }
+  :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  main{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+  main.con-barra{padding-bottom:110px}
+  h1,h2,h3{margin:0;line-height:1.2}
+  button{font:inherit;color:inherit}
+  .oculto{display:none!important}
+  .cargando{opacity:.55;pointer-events:none}
+  .titulo-f{font-family:"Montserrat","Plus Jakarta Sans",sans-serif}
+
+  /* Encabezado */
+  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .marca{font-family:"Montserrat","Plus Jakarta Sans",sans-serif;font-weight:800;font-size:13px;color:var(--texto);letter-spacing:.08em;text-transform:uppercase;line-height:1.15}
+  .marca span{display:block;font-weight:600;font-size:10px;letter-spacing:.22em;color:var(--mar);margin-top:3px}
+  .refrescar{background:none;border:1.5px solid var(--linea);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--suave);cursor:pointer;flex:none}
+  .hola{font-family:"Montserrat","Plus Jakarta Sans",sans-serif;font-size:28px;font-weight:800;letter-spacing:-.02em;margin:2px 0 18px}
+
+  /* Acceso */
+  .acceso{background:var(--tarjeta);border-radius:22px;padding:22px}
+  .acceso h1{font-family:"Montserrat","Plus Jakarta Sans",sans-serif;font-size:24px;font-weight:800;letter-spacing:-.01em}
+  .acceso p.intro{color:var(--suave);margin:6px 0 18px;font-size:15px}
+  .acceso label{display:block;font-size:13px;font-weight:600;color:var(--suave);margin-bottom:6px}
+  .acceso input{display:block;width:100%;font:inherit;font-size:24px;letter-spacing:.3em;text-align:center;color:var(--texto);background:var(--fondo);border:1.5px solid var(--linea);border-radius:14px;padding:14px}
+  .acceso input:focus{outline:none;border-color:var(--navy)}
+  .error{color:var(--pen);font-size:14px;margin:10px 0 0;min-height:20px}
+  .ayuda{color:var(--suave);font-size:13px;margin:12px 0 0;text-align:center}
+  .btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;font-size:15px;cursor:pointer;background:var(--navy);color:#fff}
+  .btn.ancho{width:100%;padding:15px;font-size:16px;border-radius:14px;margin-top:8px}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#0B0B0C}}
+  :root[data-theme="dark"] .btn{color:#0B0B0C}
+  .btn.sec{background:none;color:var(--navy);border:1.5px solid var(--linea)}
+
+  /* Hero */
+  .hero{background:var(--hero);color:#fff;border-radius:22px;padding:22px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+  .anillo{width:92px;height:92px;position:relative}
+  .anillo svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .anillo .base{stroke:rgba(255,255,255,.18)}
+  .anillo .lleno{stroke:var(--azul-claro);transition:stroke-dashoffset .8s ease}
+  .anillo .num{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1}
+  .anillo .num b{font-size:24px;font-weight:800;display:block}
+  .anillo .num small{font-size:11px;color:#B9C9DA;display:block;margin-top:3px}
+  .hero h2{font-family:"Montserrat","Plus Jakarta Sans",sans-serif;font-size:20px;font-weight:700;letter-spacing:-.01em}
+  .hero p{margin:6px 0 0;color:#C9D4E5;font-size:14px}
+  .hero .ir{margin-top:12px;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#111;border:0;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer}
+
+  .datos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 0}
+  .dato{background:var(--tarjeta);border-radius:16px;padding:14px 16px}
   .dato small{display:block;color:var(--suave);font-size:13px}
-  .dato strong{font-size:17px;color:var(--navy)}
-  .paso{display:flex;gap:14px;align-items:flex-start}
-  .eje{display:flex;flex-direction:column;align-items:center}
-  .punto{width:22px;height:22px;border-radius:50%;border:2px solid var(--gris);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
-  .punto.hecho{background:var(--navy);border-color:var(--navy);color:#fff}
-  .punto.actual{border:3px solid var(--navy);background:#fff}
-  .linea{width:2px;height:26px;background:#D3D9E0}
-  .linea.hecha{background:var(--navy)}
-  .paso .t{font-weight:600;color:var(--suave)}
-  .paso .t.on{color:var(--texto)} .paso .t.actual{color:var(--navy);font-weight:700}
-  .paso small{display:block;color:var(--suave);font-size:13px;font-weight:500}
-  .grupo{font-size:13px;font-weight:700;color:var(--suave);margin:16px 0 2px}
-  .doc{padding:12px 0;border-top:1px solid var(--linea)}
-  .pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
-  .Aprobado{background:var(--ok-bg);color:var(--ok)} .Revision{background:var(--rev-bg);color:var(--rev)} .Pendiente{background:var(--pen-bg);color:var(--pen)}
-  .nota{margin-top:8px;font-size:13px;color:var(--pen);background:var(--nota);padding:8px 10px;border-radius:8px}
-  .boton{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;width:100%;border:none;border-radius:12px;background:var(--navy);color:#fff;font:inherit;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer}
-  .boton:hover{background:#0B1A30}
-  .boton.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy);min-height:44px;font-size:14px}
-  .boton.sec:hover{background:var(--fondo)}
-  .ayuda{margin:8px 0 0;font-size:13px;color:var(--suave);text-align:center}
-  .contacto{display:flex;flex-direction:column;gap:12px}
-  .persona{display:flex;gap:12px;align-items:center}
-  .ini{width:44px;height:44px;border-radius:50%;background:#DCE4F0;color:var(--navy);font-weight:700;display:flex;align-items:center;justify-content:center}
-  .acciones{display:flex;gap:8px}
-  footer{margin:4px 20px 0;font-size:12px;color:var(--suave);text-align:center;line-height:1.6}
+  .dato strong{font-size:17px;font-weight:700;color:var(--texto)}
+
+  /* Secciones */
+  .seccion{margin-top:28px}
+  .seccion > h2{font-family:"Montserrat","Plus Jakarta Sans",sans-serif;font-size:18px;font-weight:800;letter-spacing:-.01em;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .etapas{background:var(--tarjeta);border-radius:18px;padding:18px 16px}
+  .riel{display:flex;align-items:center;gap:6px}
+  .riel i{flex:1;height:6px;border-radius:999px;background:var(--linea)}
+  .riel i.hecha{background:var(--azul-claro)}
+  .riel i.actual{background:linear-gradient(90deg,var(--azul-claro) 50%,var(--linea) 50%)}
+  .etapa-actual{margin-top:12px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .etapa-actual b{font-size:16px}
+  .etapa-actual span{font-size:13px;color:var(--suave);white-space:nowrap}
+  .link{background:none;border:0;padding:4px 0;color:var(--navy);font-weight:600;font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .lista-etapas{list-style:none;margin:10px 0 0;padding:0;font-size:14px}
+  .lista-etapas li{display:flex;gap:10px;align-items:center;padding:6px 0;color:var(--suave)}
+  .lista-etapas li::before{content:"";width:10px;height:10px;border-radius:50%;border:2px solid var(--linea);flex:none}
+  .lista-etapas li.hecha{color:var(--texto)} .lista-etapas li.hecha::before{background:var(--azul-claro);border-color:var(--azul-claro)}
+  .lista-etapas li.actual{color:var(--texto);font-weight:700} .lista-etapas li.actual::before{border-color:var(--azul-claro);box-shadow:0 0 0 3px var(--mar-bg)}
+
+  .filtro{display:inline-flex;background:var(--tarjeta);border-radius:999px;padding:3px;gap:2px;font-family:"Plus Jakarta Sans",sans-serif}
+  .filtro button{border:0;background:none;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--suave);cursor:pointer}
+  .filtro button[aria-pressed="true"]{background:var(--navy);color:#fff}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .filtro button[aria-pressed="true"]{color:#0B0B0C}}
+  :root[data-theme="dark"] .filtro button[aria-pressed="true"]{color:#0B0B0C}
+
+  /* Bloques */
+  details.bloque{background:var(--tarjeta);border-radius:18px;margin-top:10px;overflow:hidden}
+  details.bloque > summary{list-style:none;cursor:pointer;padding:16px;display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;align-items:center}
+  details.bloque > summary::-webkit-details-marker{display:none}
+  details.bloque > summary:focus-visible{outline:2px solid var(--navy);outline-offset:-2px;border-radius:18px}
+  .b-tit{font-weight:700;font-size:16px;min-width:0}
+  .b-sub{grid-column:1 / -1;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--suave)}
+  .mini{flex:1;max-width:140px;height:5px;border-radius:999px;background:var(--linea);overflow:hidden}
+  .mini span{display:block;height:100%;background:var(--azul-claro);border-radius:999px}
+  .chev{width:9px;height:9px;border-right:2px solid var(--suave);border-bottom:2px solid var(--suave);transform:rotate(45deg);margin:-4px 4px 0;transition:transform .2s}
+  details[open] > summary .chev{transform:rotate(-135deg);margin-top:4px}
+  .cuerpo{padding:0 16px 8px;border-top:1px solid var(--linea)}
+  .doc{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--linea)}
+  .doc:last-child{border-bottom:0}
+  .doc .n{font-size:15px}
+  .doc .nota{display:block;margin-top:6px;font-size:13px;color:var(--pen);background:var(--nota);padding:7px 10px;border-radius:10px}
+  .pill{flex:none;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .Pendiente{background:var(--pen-bg);color:var(--pen)}
+  .Revision{background:var(--rev-bg);color:var(--rev)}
+  .Aprobado{background:var(--mar-bg);color:var(--mar)}
+  .vacio{background:var(--tarjeta);border-radius:18px;padding:18px;margin-top:10px;color:var(--suave);font-size:14px}
+
+  /* Propiedades */
+  .grupo-prop{font-size:15px;font-weight:800;color:var(--texto);margin:20px 0 0}
+  .subt{font-size:13px;color:var(--suave);margin:2px 0 0}
+  .resumen{padding:12px 0 4px;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .resumen b{color:var(--suave);font-weight:600}
+  .form{padding:12px 0 6px}
+  .form label{display:block;font-size:13px;font-weight:600;color:var(--suave);margin-bottom:4px}
+  .form input{display:block;width:100%;font:inherit;font-size:16px;color:var(--texto);background:var(--fondo);border:1.5px solid var(--linea);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+  .form input:focus{outline:none;border-color:var(--navy)}
+  .fila-botones{display:flex;gap:8px}
+  .msg{font-size:13px;margin:8px 0 0;min-height:18px}
+  .nueva{background:var(--tarjeta);border-radius:18px;margin-top:10px;padding:14px 16px 8px}
+  .agregar{width:100%;margin-top:10px;background:none;border:1.5px dashed var(--sobre-navy);border-radius:18px;padding:14px;color:var(--navy);font-weight:700;font-size:14px;cursor:pointer}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .agregar{border-color:var(--linea)}}
+  :root[data-theme="dark"] .agregar{border-color:var(--linea)}
+
+  /* Equipo */
+  .persona{background:var(--tarjeta);border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+  .ini{width:42px;height:42px;border-radius:50%;background:var(--mar-bg);color:var(--mar);display:grid;place-items:center;font-weight:800;flex:none}
+  .persona .q{flex:1;min-width:140px}
+  .persona .q b{display:block;font-size:15px}
+  .persona .q small{color:var(--suave);font-size:13px}
+  .persona .acc{display:flex;gap:6px}
+  .persona a{flex:none;font-size:13px;font-weight:700;color:var(--navy);text-decoration:none;border:1.5px solid var(--linea);border-radius:999px;padding:7px 12px}
+
+  /* Pie legal */
+  footer{margin-top:28px;font-size:12px;color:var(--suave);text-align:center;line-height:1.55}
   footer a{color:inherit;text-decoration:underline}
-  .disclosure{margin:14px auto 0;max-width:720px;font-size:11px;line-height:1.55;text-align:justify;text-align-last:center;hyphens:auto}
+  .disclosure{margin:12px auto 0;max-width:640px;font-size:11px;text-align:justify;text-align-last:center;hyphens:auto}
   .ny{font-size:11px;margin-top:2px}
-  .eho{display:flex;flex-direction:column;align-items:center;margin:14px 0 8px;color:var(--suave)}
+  .eho{display:flex;flex-direction:column;align-items:center;margin:14px 0 8px}
   .eho-t{font-size:6.5px;font-weight:700;line-height:1.15;letter-spacing:.04em;margin-top:2px}
   .lic{font-size:11px;margin-top:4px}
-  label{font-weight:700;color:var(--navy)}
-  input{width:100%;min-height:52px;border:1.5px solid var(--gris);border-radius:10px;padding:0 14px;font:inherit;font-size:20px;letter-spacing:.25em;color:var(--texto);margin:10px 0 14px}
-  input:focus,.boton:focus-visible,a:focus-visible{outline:3px solid #7FA3D6;outline-offset:2px}
-  .error{color:var(--pen);font-size:14px;margin:0 0 12px;min-height:20px}
-  .oculto{display:none}
-  .prop{border:1.5px solid var(--gris);border-radius:12px;padding:16px;margin-top:14px}
-  .prop h3{margin:0 0 10px;font-size:16px;color:var(--navy)}
-  .prop label{display:block;font-size:13px;color:var(--suave);font-weight:600}
-  .prop input{font-size:16px;letter-spacing:normal;min-height:46px;margin:4px 0 10px}
-  .prop .msg{font-size:13px;margin:6px 0 0;min-height:18px}
-  .prop .doc:last-child{border-bottom:0}
-  .agregar{margin-top:14px}
-  .subtit{font-weight:700;color:var(--navy);font-size:15px;margin:22px 0 2px}
-  .subtit + .ayuda{text-align:left;margin:0}
-  .cargando{opacity:.6;pointer-events:none}
+
+  /* Barra fija para subir */
+  .barra-subir{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--fondo) 70%,transparent);z-index:5}
+  .barra-subir a{display:flex;justify-content:center;align-items:center;gap:8px;max-width:528px;margin:0 auto;background:var(--navy);color:#fff;text-decoration:none;font-weight:700;border-radius:16px;padding:15px;font-size:16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .barra-subir a{color:#0B0B0C}}
+  :root[data-theme="dark"] .barra-subir a{color:#0B0B0C}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<div class="app" id="app"></div>
+<main id="app"></main>
+<div class="barra-subir oculto" id="barra"><a href="#" id="subir" target="_blank" rel="noopener"></a></div>
 
 <script>
 var API_URL = 'https://script.google.com/macros/s/AKfycbys4KDIrbsHfl1kKYP8V3YjDoTzSq8o8uWv2EaTwWj7uTForHFO5C70d4SZlmA3hFCpyQ/exec';
 var PORTAL_ID = (new URLSearchParams(window.location.search).get('c') || '').replace(/[^A-Za-z0-9]/g,'').slice(0,20);
 var codigoGuardado = '';
+var ABIERTOS = {}, SOLO_FALTA = false, EDITANDO = {}, AGREGANDO = null, VER_ETAPAS = false;
+
+/* Títulos de secciones: en inglés para todos los clientes */
+var SEC = {prestamo:'Your Loan', docs:'Your Documents', props:'Properties', principal:'Primary Residence',
+           us:'U.S. Properties', otras:'Other Properties', equipo:'Your MLA Team'};
+
 var T = {
-  es:{privLink:'Política de privacidad',marca:'Miami Lending Advisors',titulo:'Tu portal de préstamo',intro:'Revisa qué documentos faltan y en qué etapa va tu proceso.',
+  es:{titulo:'Tu portal de préstamo',intro:'Revisa qué documentos faltan y en qué etapa va tu proceso.',
       codigo:'Código de acceso',entrar:'Entrar',ayudaCodigo:'Código personal e intransferible, de uso exclusivo para este portal.',
       errCodigo:'El código no es correcto. Revísalo e intenta de nuevo.',errBloq:'Demasiados intentos. Espera unos minutos e intenta de nuevo.',
       errInactivo:'Este portal ya no está activo. Si necesitas algo, escríbenos.',errLink:'Este link no está completo. Usa el link que te enviamos.',errRed:'No pudimos conectar. Revisa tu internet e intenta de nuevo.',
-      hola:'Hola, ',avance:'Así va tu préstamo',aprobados:' de ',aprobados2:' documentos aprobados',monto:'Monto del préstamo',cierre:'Cierre estimado',
-      etapas:'Etapas del proceso',completado:'Completado',estasAqui:'Estás aquí',docs:'Tus documentos',pendientes:' pendientes',pendiente1:' pendiente',
-      subir:'Subir documentos a mi carpeta',ayudaSubir:'Se abre tu carpeta privada en Google Drive.',equipo:'Tu equipo en MLA',actualizar:'Ver cambios recientes',
-      privado:'Este portal es privado. No compartas tu link ni tu código.',
-      estados:{'Pendiente':'Pendiente','En revisión':'En revisión','Aprobado':'Aprobado'},
-      props:'Tus propiedades',propsIntro:'Escribe la dirección completa y el valor aproximado de cada propiedad. Debajo de cada una están sus documentos.',
-      direccion:'Dirección completa',valor:'Valor aproximado',phValor:'Ej.: USD 350,000',guardar:'Guardar',guardado:'Guardado ✓',
-      agregarUS:'+ Agregar propiedad en EE.UU.',agregarPais:'+ Agregar propiedad en tu país',agregarBtn:'Agregar propiedad',cancelar:'Cancelar',principal:'Residencia principal',nueva:'Nueva propiedad',
-      grupoUS:'Otras propiedades en EE.UU.',grupoPais:'Otras propiedades en tu país',sinProps:'Si no tienes, no agregues nada.',
-      docsProp:'Documentos de esta propiedad',errDir:'Escribe la dirección completa.',errMax:'Ya llegaste al máximo de propiedades. Escríbenos si tienes más.',errGuardar:'No se pudo guardar. Intenta de nuevo.'},
-  en:{privLink:'Privacy Policy',marca:'Miami Lending Advisors',titulo:'Your loan portal',intro:'See which documents are missing and where your loan stands.',
+      hola:'Hola, ',actualizar:'Actualizar',aprobadosAn:'aprobados',falta1:'Te falta 1 documento',faltanN:'Te faltan {n} documentos',todoListo:'¡Ya tenemos todo!',todoListoSub:'Te avisaremos cuando avancemos a la siguiente etapa.',verFalta:'Ver qué falta',
+      monto:'Monto del préstamo',cierre:'Cierre estimado',paso:'Paso {a} de {b}',verEtapas:'Ver todas las etapas',ocultarEtapas:'Ocultar etapas',
+      todos:'Todos',loQueFalta:'Lo que falta',nadaFalta:'En estos bloques no te falta nada. Revisa tus propiedades más abajo.',
+      bFalta1:'Falta 1',bFaltanN:'Faltan {n}',completo:'Completo',enRev:'En revisión',bAprob:'{a} de {b} aprobados',
+      estados:{'Pendiente':'Pendiente','Revision':'En revisión','Aprobado':'Aprobado'},
+      propsIntro:'Escribe la dirección y el valor aproximado de cada una. Sus documentos están adentro.',otrasSub:'Propiedades que estén a tu nombre.',sinProps:'Si no tienes, no agregues nada.',
+      direccion:'Dirección completa',valor:'Valor aproximado',phValor:'Ej.: USD 350,000',guardar:'Guardar',editar:'Editar',cancelar:'Cancelar',
+      agregarUS:'+ Agregar propiedad en EE.UU.',agregarOtra:'+ Agregar otra propiedad',agregarBtn:'Agregar propiedad',nueva:'Nueva propiedad',
+      errDir:'Escribe la dirección completa.',errMax:'Ya llegaste al máximo de propiedades. Escríbenos si tienes más.',errGuardar:'No se pudo guardar. Intenta de nuevo.',
+      subir:'Subir documentos',privado:'Este portal es privado. No compartas tu link ni tu código.',privLink:'Política de privacidad'},
+  en:{titulo:'Your loan portal',intro:'See which documents are missing and where your loan stands.',
       codigo:'Access code',entrar:'Enter',ayudaCodigo:'Personal, non-transferable code for exclusive use of this portal.',
       errCodigo:'That code is not correct. Please check it and try again.',errBloq:'Too many attempts. Please wait a few minutes and try again.',
       errInactivo:'This portal is no longer active. Contact us if you need anything.',errLink:'This link is incomplete. Please use the link we sent you.',errRed:'We could not connect. Check your internet and try again.',
-      hola:'Hi, ',avance:'Your loan progress',aprobados:' of ',aprobados2:' documents approved',monto:'Loan amount',cierre:'Estimated closing',
-      etapas:'Loan stages',completado:'Completed',estasAqui:'You are here',docs:'Your documents',pendientes:' pending',pendiente1:' pending',
-      subir:'Upload documents to my folder',ayudaSubir:'Opens your private Google Drive folder.',equipo:'Your MLA team',actualizar:'Check for updates',
-      privado:'This portal is private. Do not share your link or code.',
-      estados:{'Pendiente':'Pending','En revisión':'In review','Aprobado':'Approved'},
-      props:'Your properties',propsIntro:'Enter the full address and approximate value of each property. Its documents are listed below it.',
-      direccion:'Full address',valor:'Approximate value',phValor:'E.g. USD 350,000',guardar:'Save',guardado:'Saved ✓',
-      agregarUS:'+ Add a U.S. property',agregarPais:'+ Add a property in your country',agregarBtn:'Add property',cancelar:'Cancel',principal:'Primary residence',nueva:'New property',
-      grupoUS:'Other properties in the U.S.',grupoPais:'Other properties in your country',sinProps:'If you have none, leave this empty.',
-      docsProp:'Documents for this property',errDir:'Please enter the full address.',errMax:'You have reached the maximum number of properties. Contact us if you have more.',errGuardar:'Could not save. Please try again.'}
+      hola:'Hi, ',actualizar:'Refresh',aprobadosAn:'approved',falta1:'1 document missing',faltanN:'{n} documents missing',todoListo:'We have everything!',todoListoSub:'We will let you know when we move to the next stage.',verFalta:'See what’s missing',
+      monto:'Loan amount',cierre:'Estimated closing',paso:'Step {a} of {b}',verEtapas:'See all stages',ocultarEtapas:'Hide stages',
+      todos:'All',loQueFalta:'Missing',nadaFalta:'Nothing missing in these sections. Check your properties below.',
+      bFalta1:'1 missing',bFaltanN:'{n} missing',completo:'Complete',enRev:'In review',bAprob:'{a} of {b} approved',
+      estados:{'Pendiente':'Pending','Revision':'In review','Aprobado':'Approved'},
+      propsIntro:'Enter the address and approximate value of each one. Its documents are inside.',otrasSub:'Properties in your name.',sinProps:'If you have none, leave this empty.',
+      direccion:'Full address',valor:'Approximate value',phValor:'E.g. USD 350,000',guardar:'Save',editar:'Edit',cancelar:'Cancel',
+      agregarUS:'+ Add a U.S. property',agregarOtra:'+ Add another property',agregarBtn:'Add property',nueva:'New property',
+      errDir:'Please enter the full address.',errMax:'You have reached the maximum number of properties. Contact us if you have more.',errGuardar:'Could not save. Please try again.',
+      subir:'Upload documents',privado:'This portal is private. Do not share your link or code.',privLink:'Privacy Policy'}
 };
 var ETAPAS = ['Solicitud recibida','Reunión de documentos','Enviado al banco','Avalúo y condiciones','Aprobación final','Cierre'];
 var ETAPAS_VER = ['Solicitud recibida','Recopilación de documentos','Análisis de crédito','Avalúo y condiciones','Aprobación final','Cierre'];
 var ETAPAS_EN = ['Application received','Document collection','Underwriting','Appraisal and conditions','Final approval','Closing'];
-var CATEGORIAS = ['Identificación','Ingresos','Fondos','Empresa (LLC)','Compra','Otras propiedades','Para firmar'];
-var CATEGORIAS_EN = {'Identificación':'Identification','Ingresos':'Income','Fondos':'Funds','Empresa (LLC)':'Your company (LLC)','Compra':'The purchase','Otras propiedades':'Other properties','Para firmar':'To sign'};
+var CATEGORIAS_EN = {'Identificación':'Personal Documents','Ingresos':'Income','Fondos':'Assets','Empresa (LLC)':'Corporate Documents (LLC)','Compra':'Purchase','Otras propiedades':'Other Properties','Para firmar':'Documents to Sign'};
 
-function el(tag, clase, texto){var n=document.createElement(tag);if(clase)n.className=clase;if(texto!=null)n.textContent=texto;return n;}
+function el(tag,clase,texto){var n=document.createElement(tag);if(clase)n.className=clase;if(texto!=null)n.textContent=texto;return n;}
 function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
 function claseEstado(e){var n=norm(e);return n.indexOf('aprob')===0?'Aprobado':(n.indexOf('revis')>-1?'Revision':'Pendiente');}
+function fmt(s,o){return s.replace(/\{(\w+)\}/g,function(_,k){return o[k];});}
 function fechaBonita(iso,idioma){if(!iso)return '—';var p=iso.split('-');var d=new Date(Number(p[0]),Number(p[1])-1,Number(p[2]));
   return d.toLocaleDateString(idioma==='en'?'en-US':'es-ES',{day:'numeric',month:'long',year:'numeric'});}
 function dinero(n){return n?'$'+Math.round(n).toLocaleString('en-US'):'—';}
+function contar(l,c){return l.filter(function(x){return claseEstado(x.estado)===c;}).length;}
 
-/* ---------- Pantalla de acceso ---------- */
-function pantallaAcceso(mensaje){
-  var t=T.es, app=document.getElementById('app'); app.innerHTML='';
-  var h=el('header'); h.appendChild(el('span','marca',t.marca)); h.appendChild(el('h1',null,t.titulo)); h.appendChild(el('p',null,t.intro)); app.appendChild(h);
-  var c=el('section','tarjeta');
-  var lab=el('label',null,t.codigo); lab.setAttribute('for','codigo'); c.appendChild(lab);
-  var inp=el('input'); inp.id='codigo'; inp.type='text'; inp.inputMode='numeric'; inp.autocomplete='one-time-code'; inp.maxLength=6; inp.placeholder='••••••'; c.appendChild(inp);
-  var err=el('p','error',mensaje||''); err.setAttribute('role','alert'); c.appendChild(err);
-  var b=el('button','boton',t.entrar); b.type='button'; c.appendChild(b);
-  c.appendChild(el('p','ayuda',t.ayudaCodigo)); app.appendChild(c);
-  app.appendChild(pie(t,''));
-  if(!PORTAL_ID){err.textContent=t.errLink;b.disabled=true;return;}
-  function enviar(){var cod=inp.value.replace(/\D/g,''); if(cod.length<6){err.textContent=t.errCodigo;return;}
-    c.classList.add('cargando'); pedir(cod,function(r){c.classList.remove('cargando');
-      if(r.ok){codigoGuardado=cod;pantallaPortal(r.portal);}else{err.textContent=r.motivo==='bloqueado'?t.errBloq:(r.motivo==='inactivo'?t.errInactivo:(r.motivo==='red'?t.errRed:t.errCodigo));}})}
-  b.addEventListener('click',enviar); inp.addEventListener('keydown',function(e){if(e.key==='Enter')enviar();}); inp.focus();
-}
-
+/* ---------- Conexión ---------- */
 function pedir(codigo, listo){
-  fetch(API_URL,{method:'POST',credentials:'omit',redirect:'follow',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},
+  fetch(API_URL,{method:'POST',credentials:'omit',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},
     body:JSON.stringify({c:PORTAL_ID,codigo:codigo})})
   .then(function(r){return r.json();})
   .then(function(r){listo(r&&typeof r.ok==='boolean'?r:{ok:false,motivo:'red'});})
   .catch(function(){listo({ok:false,motivo:'red'});});
 }
-
 function accion(datos, listo){
   datos.c=PORTAL_ID; datos.codigo=codigoGuardado;
-  fetch(API_URL,{method:'POST',credentials:'omit',redirect:'follow',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(datos)})
+  fetch(API_URL,{method:'POST',credentials:'omit',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(datos)})
   .then(function(r){return r.json();})
   .then(function(r){listo(r&&typeof r.ok==='boolean'?r:{ok:false,motivo:'red'});})
   .catch(function(){listo({ok:false,motivo:'red'});});
 }
 
-function filaDoc(x,t){
-  var item=el('div','doc'), fila=el('div','fila'); fila.appendChild(el('span',null,x.nombre));
-  var ce=claseEstado(x.estado); fila.appendChild(el('span','pill '+ce,t.estados[ce==='Revision'?'En revisión':ce]));
-  item.appendChild(fila); if(x.nota) item.appendChild(el('div','nota',x.nota)); return item;
+/* ---------- Pantalla de acceso ---------- */
+function encabezado(app,derecha){
+  var top=el('div','top'); var m=el('div','marca','Miami Lending Advisors'); m.appendChild(el('span',null,'Portal Borrower')); top.appendChild(m);
+  if(derecha) top.appendChild(derecha); app.appendChild(top);
+}
+function pantallaAcceso(mensaje){
+  var t=T.es, app=document.getElementById('app'); app.innerHTML=''; app.className='';
+  document.getElementById('barra').classList.add('oculto');
+  encabezado(app);
+  var c=el('section','acceso'); c.appendChild(el('h1',null,t.titulo)); c.appendChild(el('p','intro',t.intro));
+  var lab=el('label',null,t.codigo); lab.htmlFor='codigo'; c.appendChild(lab);
+  var inp=el('input'); inp.id='codigo'; inp.type='text'; inp.inputMode='numeric'; inp.autocomplete='one-time-code'; inp.maxLength=6; inp.placeholder='••••••'; c.appendChild(inp);
+  var err=el('p','error',mensaje||''); err.setAttribute('role','alert'); c.appendChild(err);
+  var b=el('button','btn ancho',t.entrar); b.type='button'; c.appendChild(b);
+  c.appendChild(el('p','ayuda',t.ayudaCodigo)); app.appendChild(c);
+  app.appendChild(pie(t));
+  if(!PORTAL_ID){err.textContent=t.errLink;b.disabled=true;return;}
+  function enviar(){var cod=inp.value.replace(/\D/g,''); if(cod.length<6){err.textContent=t.errCodigo;return;}
+    c.classList.add('cargando'); pedir(cod,function(r){c.classList.remove('cargando');
+      if(r.ok){codigoGuardado=cod;pantallaPortal(r.portal);}
+      else{err.textContent=r.motivo==='bloqueado'?t.errBloq:(r.motivo==='inactivo'?t.errInactivo:(r.motivo==='red'?t.errRed:t.errCodigo));}});}
+  b.addEventListener('click',enviar); inp.addEventListener('keydown',function(e){if(e.key==='Enter')enviar();}); inp.focus();
 }
 
-// Una propiedad: título, dirección y valor que escribe el cliente, y sus documentos
-function bloquePropiedad(prop, docs, t, alCancelar, tipo){
-  var b=el('div','prop'); var nueva=!prop.id; tipo=tipo||prop.tipo||'País';
-  var titulo=prop.nombre; if(tipo==='Principal'){titulo=t.principal+(prop.direccion?': '+prop.direccion:'');}
-  var h3=el('h3',null,titulo); b.appendChild(h3);
-  var l1=el('label',null,t.direccion); var i1=el('input'); i1.type='text'; i1.maxLength=300; i1.value=prop.direccion||''; i1.autocomplete='street-address';
-  var id1='dir_'+(prop.id||'nueva'); i1.id=id1; l1.setAttribute('for',id1); b.appendChild(l1); b.appendChild(i1);
-  var l2=el('label',null,t.valor); var i2=el('input'); i2.type='text'; i2.maxLength=60; i2.value=prop.valor||''; i2.placeholder=t.phValor;
-  var id2='val_'+(prop.id||'nueva'); i2.id=id2; l2.setAttribute('for',id2); b.appendChild(l2); b.appendChild(i2);
-  var acc=el('div','acciones'); var g=el('button','boton',(nueva&&tipo!=='Principal')?t.agregarBtn:t.guardar); g.type='button'; acc.appendChild(g);
-  if(alCancelar){var c=el('button','boton sec',t.cancelar); c.type='button'; c.addEventListener('click',alCancelar); acc.appendChild(c);}
-  b.appendChild(acc); var msg=el('p','msg'); msg.setAttribute('aria-live','polite'); b.appendChild(msg);
+/* ---------- Bloques que se despliegan ---------- */
+function bloque(clave,titulo,docs,t,extra){
+  var visibles=SOLO_FALTA?docs.filter(function(d){return claseEstado(d.estado)==='Pendiente';}):docs;
+  if(SOLO_FALTA && !visibles.length && !extra) return null;
+  var det=el('details','bloque'); if(ABIERTOS[clave]) det.open=true;
+  det.addEventListener('toggle',function(){ABIERTOS[clave]=det.open;});
+  var s=el('summary'); s.appendChild(el('span','b-tit',titulo));
+  var pend=contar(docs,'Pendiente'), apr=contar(docs,'Aprobado');
+  if(docs.length){
+    s.appendChild(pend? el('span','pill Pendiente', pend===1?t.bFalta1:fmt(t.bFaltanN,{n:pend}))
+                      : (apr===docs.length? el('span','pill Aprobado',t.completo) : el('span','pill Revision',t.enRev)));
+  } else s.appendChild(el('span'));
+  s.appendChild(el('span','chev'));
+  if(docs.length){
+    var sub=el('div','b-sub'); var mini=el('div','mini'); var f=el('span'); f.style.width=Math.round(apr/docs.length*100)+'%'; mini.appendChild(f);
+    sub.appendChild(mini); sub.appendChild(el('span',null,fmt(t.bAprob,{a:apr,b:docs.length}))); s.appendChild(sub);
+  }
+  det.appendChild(s);
+  var c=el('div','cuerpo'); if(extra) c.appendChild(extra);
+  visibles.forEach(function(d){
+    var r=el('div','doc'); var n=el('div','n',d.nombre); if(d.nota) n.appendChild(el('span','nota',d.nota));
+    var ce=claseEstado(d.estado); r.appendChild(n); r.appendChild(el('span','pill '+ce,t.estados[ce])); c.appendChild(r);
+  });
+  det.appendChild(c); return det;
+}
+
+/* ---------- Propiedades ---------- */
+function formulario(prop,t,tipo,nueva,alCancelar){
+  var f=el('div','form'), sufijo=prop.id||('n'+tipo);
+  var l1=el('label',null,t.direccion); var i1=el('input'); i1.type='text'; i1.maxLength=300; i1.id='dir_'+sufijo; l1.htmlFor=i1.id; i1.value=prop.direccion||''; i1.autocomplete='street-address';
+  var l2=el('label',null,t.valor); var i2=el('input'); i2.type='text'; i2.maxLength=60; i2.id='val_'+sufijo; l2.htmlFor=i2.id; i2.value=prop.valor||''; i2.placeholder=t.phValor;
+  f.appendChild(l1);f.appendChild(i1);f.appendChild(l2);f.appendChild(i2);
+  var fb=el('div','fila-botones'); var g=el('button','btn',(nueva&&tipo!=='Principal')?t.agregarBtn:t.guardar); g.type='button'; fb.appendChild(g);
+  if(alCancelar){var c=el('button','btn sec',t.cancelar); c.type='button'; c.addEventListener('click',alCancelar); fb.appendChild(c);}
+  f.appendChild(fb);
+  var msg=el('p','msg'); msg.setAttribute('aria-live','polite'); f.appendChild(msg);
   g.addEventListener('click',function(){
     var dir=i1.value.trim(); if(!dir){msg.style.color='var(--pen)'; msg.textContent=t.errDir; i1.focus(); return;}
-    b.classList.add('cargando'); msg.textContent='';
+    f.classList.add('cargando'); msg.textContent='';
     accion({accion:nueva?'agregarPropiedad':'guardarPropiedad',tipo:tipo,propiedad:prop.id||'',direccion:dir,valor:i2.value.trim()},function(r){
-      b.classList.remove('cargando');
+      f.classList.remove('cargando');
       if(r.ok&&(!r.portal||!r.portal.propiedades)) r={ok:false,motivo:'version'};
-      if(r.ok){ if(nueva){pantallaPortal(r.portal,true);} else {msg.style.color='var(--ok)'; msg.textContent=t.guardado; if(tipo==='Principal')h3.textContent=t.principal+': '+dir;} }
-      else {msg.style.color='var(--pen)'; msg.textContent=r.motivo==='maxPropiedades'?t.errMax:t.errGuardar;}
+      if(r.ok){ if(prop.id){EDITANDO[prop.id]=false; ABIERTOS['p_'+prop.id]=true;} AGREGANDO=null; pantallaPortal(r.portal,true); }
+      else { msg.style.color='var(--pen)'; msg.textContent=r.motivo==='maxPropiedades'?t.errMax:t.errGuardar; }
     });
   });
-  if(docs.length){ b.appendChild(el('div','grupo',t.docsProp)); docs.forEach(function(x){b.appendChild(filaDoc(x,t));}); }
-  return b;
+  return f;
+}
+function propiedad(p,docs,t){
+  var tipo=p.tipo||'País';
+  var titulo=(tipo==='Principal'?SEC.principal:p.nombre)+(p.direccion?': '+p.direccion:'');
+  var clave='p_'+p.id, extra;
+  if(p.direccion && !EDITANDO[p.id]){
+    extra=el('div','resumen'); var sp=el('span'); sp.appendChild(el('b',null,t.valor+': ')); sp.appendChild(document.createTextNode(p.valor||'—'));
+    var ed=el('button','link',t.editar); ed.type='button'; ed.addEventListener('click',function(){EDITANDO[p.id]=true; ABIERTOS[clave]=true; pintar();});
+    extra.appendChild(sp); extra.appendChild(ed);
+  } else {
+    if(!p.direccion && ABIERTOS[clave]===undefined) ABIERTOS[clave]=true;
+    extra=formulario(p,t,tipo,false,p.direccion?function(){EDITANDO[p.id]=false;pintar();}:null);
+  }
+  return bloque(clave,titulo,docs,t,extra);
 }
 
 /* ---------- Portal ---------- */
-function pantallaPortal(p, mantener){
-  var t=T[p.idioma]||T.es, en=p.idioma==='en'; document.documentElement.lang=p.idioma;
+var PORTAL=null;
+function pantallaPortal(p, mantener){ PORTAL=p; pintar(); if(!mantener) window.scrollTo(0,0); }
+function pintar(){
+  var p=PORTAL, en=p.idioma==='en', t=en?T.en:T.es;
+  document.documentElement.lang=en?'en':'es';
   var app=document.getElementById('app'); app.innerHTML='';
-  var docs=p.documentos, total=docs.length;
-  var ok=docs.filter(function(d){return claseEstado(d.estado)==='Aprobado';}).length;
-  var pend=docs.filter(function(d){return claseEstado(d.estado)==='Pendiente';}).length;
+  var docs=p.documentos||[], props=p.propiedades||[], ids=props.map(function(x){return x.id;});
+  var generales=docs.filter(function(x){return !x.propiedad||ids.indexOf(x.propiedad)===-1;});
+  var apr=contar(docs,'Aprobado'), pend=contar(docs,'Pendiente');
 
-  var h=el('header'); h.appendChild(el('span','marca',t.marca)); h.appendChild(el('h1',null,t.hola+p.cliente)); app.appendChild(h);
+  var rf=el('button','refrescar',t.actualizar); rf.type='button';
+  rf.addEventListener('click',function(){rf.classList.add('cargando'); pedir(codigoGuardado,function(r){ if(r.ok) pantallaPortal(r.portal,true); else pantallaAcceso(); });});
+  encabezado(app,rf);
+  var nombre=String(p.cliente||'').split(/\s+y\s+|\s+and\s+|\s*&\s*/i).map(function(x){var w=x.trim().split(/\s+/);return w.length>2?w.slice(0,-1).join(' '):w[0];}).join(en?' & ':' y ');
+  app.appendChild(el('h1','hola',t.hola+nombre));
 
-  // Avance
-  var a=el('section','tarjeta'); a.appendChild(el('h2',null,t.avance));
-  var barra=el('div','barra'), lleno=el('div'); lleno.style.width=(total?Math.round(ok/total*100):0)+'%'; barra.appendChild(lleno); a.appendChild(barra);
-  var f=el('p',null); f.style.margin='10px 0 0'; var s=el('strong',null,ok+t.aprobados+total); s.style.color='var(--navy)'; f.appendChild(s); f.appendChild(document.createTextNode(t.aprobados2)); a.appendChild(f);
+  // Lo que falta
+  var hero=el('section','hero'); var an=el('div','anillo'); var R=40, C=2*Math.PI*R, pct=docs.length?apr/docs.length:0;
+  an.innerHTML='<svg viewBox="0 0 92 92" aria-hidden="true"><circle class="base" cx="46" cy="46" r="'+R+'" fill="none" stroke-width="8"/><circle class="lleno" cx="46" cy="46" r="'+R+'" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-pct))+'"/></svg>';
+  var num=el('div','num'); num.appendChild(el('b',null,apr+'/'+docs.length)); num.appendChild(el('small',null,t.aprobadosAn)); an.appendChild(num);
+  an.setAttribute('role','img'); an.setAttribute('aria-label',apr+' / '+docs.length+' '+t.aprobadosAn);
+  hero.appendChild(an);
+  var tx=el('div');
+  tx.appendChild(el('h2',null,pend?(pend===1?t.falta1:fmt(t.faltanN,{n:pend})):t.todoListo));
+  if(!pend) tx.appendChild(el('p',null,t.todoListoSub));
+  if(pend){var ir=el('button','ir',t.verFalta); ir.type='button'; ir.addEventListener('click',function(){SOLO_FALTA=true; pintar(); document.getElementById('docs').scrollIntoView({behavior:'smooth'});}); tx.appendChild(ir);}
+  hero.appendChild(tx); app.appendChild(hero);
+
   var datos=el('div','datos');
   [[t.monto,dinero(p.monto)],[t.cierre,fechaBonita(p.cierre,p.idioma)]].forEach(function(x){var d=el('div','dato');d.appendChild(el('small',null,x[0]));d.appendChild(el('strong',null,x[1]));datos.appendChild(d);});
-  a.appendChild(datos); app.appendChild(a);
+  app.appendChild(datos);
 
   // Etapas
-  var idx=ETAPAS.map(norm).indexOf(norm(p.etapa));
-  var e=el('section','tarjeta'); e.appendChild(el('h2',null,t.etapas));
-  ETAPAS.forEach(function(nombre,i){
-    var paso=el('div','paso'), eje=el('div','eje');
-    var pt=el('div','punto'+(i<idx?' hecho':(i===idx?' actual':'')), i<idx?'✓':''); eje.appendChild(pt);
-    if(i<ETAPAS.length-1) eje.appendChild(el('div','linea'+(i<idx?' hecha':'')));
-    var txt=el('div','t'+(i===idx?' actual':(i<idx?' on':'')), en?ETAPAS_EN[i]:ETAPAS_VER[i]);
-    if(i<idx) txt.appendChild(el('small',null,t.completado));
-    if(i===idx) txt.appendChild(el('small',null,t.estasAqui));
-    paso.appendChild(eje); paso.appendChild(txt); e.appendChild(paso);
-  });
-  app.appendChild(e);
+  var nombresEt=en?ETAPAS_EN:ETAPAS_VER, idx=Math.max(0,ETAPAS.indexOf(p.etapa));
+  var se=el('section','seccion'); se.appendChild(el('h2',null,SEC.prestamo));
+  var et=el('div','etapas'); var riel=el('div','riel'); riel.setAttribute('aria-hidden','true');
+  ETAPAS.forEach(function(_,i){riel.appendChild(el('i',i<idx?'hecha':(i===idx?'actual':'')));}); et.appendChild(riel);
+  var ea=el('div','etapa-actual'); ea.appendChild(el('b',null,nombresEt[idx])); ea.appendChild(el('span',null,fmt(t.paso,{a:idx+1,b:ETAPAS.length}))); et.appendChild(ea);
+  var ve=el('button','link',VER_ETAPAS?t.ocultarEtapas:t.verEtapas); ve.type='button'; ve.setAttribute('aria-expanded',String(VER_ETAPAS));
+  ve.addEventListener('click',function(){VER_ETAPAS=!VER_ETAPAS;pintar();}); et.appendChild(ve);
+  if(VER_ETAPAS){var ol=el('ol','lista-etapas'); nombresEt.forEach(function(n,i){ol.appendChild(el('li',i<idx?'hecha':(i===idx?'actual':''),n));}); et.appendChild(ol);}
+  se.appendChild(et); app.appendChild(se);
 
-  // Documentos
-  var d=el('section','tarjeta'); var cab=el('div','fila'); cab.appendChild(el('h2',null,t.docs));
-  if(pend>0){var pp=el('span','pill Pendiente',pend+(pend===1?t.pendiente1:t.pendientes)); cab.appendChild(pp);} d.appendChild(cab);
-  var props=p.propiedades||[], idsProp=props.map(function(x){return x.id;});
-  var generales=docs.filter(function(x){return !x.propiedad||idsProp.indexOf(x.propiedad)===-1;});
-  var cats=CATEGORIAS.slice(); generales.forEach(function(x){if(cats.indexOf(x.categoria)===-1)cats.push(x.categoria);});
+  // Documentos por bloques, en el orden en que el equipo los puso
+  var sd=el('section','seccion'); sd.id='docs'; var h=el('h2',null,SEC.docs);
+  var fl=el('div','filtro'); fl.setAttribute('role','group');
+  [[t.todos,false],[t.loQueFalta,true]].forEach(function(x){var b=el('button',null,x[0]); b.type='button'; b.setAttribute('aria-pressed',String(SOLO_FALTA===x[1])); b.addEventListener('click',function(){SOLO_FALTA=x[1];pintar();}); fl.appendChild(b);});
+  h.appendChild(fl); sd.appendChild(h);
+  var cats=[]; generales.forEach(function(x){var c=x.categoria||''; if(cats.indexOf(c)===-1)cats.push(c);});
+  var algun=false;
   cats.forEach(function(cat){
-    var lista=generales.filter(function(x){return x.categoria===cat;}); if(!lista.length)return;
-    d.appendChild(el('div','grupo',en?(CATEGORIAS_EN[cat]||cat):(cat||'Otros')));
-    lista.forEach(function(x){ d.appendChild(filaDoc(x,t)); });
+    var lista=generales.filter(function(x){return (x.categoria||'')===cat;});
+    var b=bloque('c_'+cat, en?(CATEGORIAS_EN[cat]||cat||'Other'):(cat||'Otros'), lista, t); if(b){sd.appendChild(b); algun=true;}
   });
+  if(SOLO_FALTA && !algun) sd.appendChild(el('div','vacio',t.nadaFalta));
+  app.appendChild(sd);
 
   // Propiedades
-  var zp=el('div'); zp.style.marginTop='22px'; zp.appendChild(el('h2',null,t.props)); zp.appendChild(el('p','ayuda',t.propsIntro));
   function docsDe(pr){return docs.filter(function(x){return x.propiedad===pr.id;});}
+  var sp=el('section','seccion'); sp.appendChild(el('h2',null,SEC.props)); sp.appendChild(el('p','subt',t.propsIntro));
   var principal=props.filter(function(x){return x.tipo==='Principal';})[0];
-  zp.appendChild(principal?bloquePropiedad(principal,docsDe(principal),t):bloquePropiedad({nombre:t.principal},[],t,null,'Principal'));
-  [['EE.UU.',t.grupoUS,t.agregarUS],['País',t.grupoPais,t.agregarPais]].forEach(function(g){
+  if(principal){ var bp=propiedad(principal,docsDe(principal),t); if(bp) sp.appendChild(bp); }
+  else { var np=el('div','nueva'); np.appendChild(el('div','b-tit',SEC.principal)); np.appendChild(formulario({},t,'Principal',true,null)); sp.appendChild(np); }
+  [['EE.UU.',SEC.us,t.agregarUS,''],['País',SEC.otras,t.agregarOtra,t.otrasSub]].forEach(function(g){
+    sp.appendChild(el('div','grupo-prop',g[1])); if(g[3]) sp.appendChild(el('p','subt',g[3]));
     var lista=props.filter(function(x){return x.tipo===g[0];});
-    zp.appendChild(el('div','subtit',g[1]));
-    if(!lista.length) zp.appendChild(el('p','ayuda',t.sinProps));
-    lista.forEach(function(pr){ zp.appendChild(bloquePropiedad(pr,docsDe(pr),t)); });
-    var cont=el('div'); var ag=el('button','boton sec agregar',g[2]); ag.type='button';
-    ag.addEventListener('click',function(){ ag.classList.add('oculto');
-      var nb=bloquePropiedad({nombre:t.nueva},[],t,function(){ cont.removeChild(nb); ag.classList.remove('oculto'); },g[0]);
-      cont.appendChild(nb); nb.querySelector('input').focus(); });
-    zp.appendChild(cont); zp.appendChild(ag);
+    lista.forEach(function(pr){ var b=propiedad(pr,docsDe(pr),t); if(b) sp.appendChild(b); });
+    if(AGREGANDO===g[0]){
+      var caja=el('div','nueva'); caja.appendChild(el('div','b-tit',t.nueva));
+      caja.appendChild(formulario({},t,g[0],true,function(){AGREGANDO=null;pintar();})); sp.appendChild(caja);
+      setTimeout(function(){var i=caja.querySelector('input'); if(i) i.focus();},0);
+    } else {
+      if(!lista.length) sp.appendChild(el('p','subt',t.sinProps));
+      var a=el('button','agregar',g[2]); a.type='button'; a.addEventListener('click',function(){AGREGANDO=g[0];pintar();}); sp.appendChild(a);
+    }
   });
-  d.appendChild(zp);
-  if(p.carpeta){var sp=el('div'); sp.style.marginTop='18px'; var up=el('a','boton',t.subir); up.href=p.carpeta; up.target='_blank'; up.rel='noopener'; sp.appendChild(up); sp.appendChild(el('p','ayuda',t.ayudaSubir)); d.appendChild(sp);}
-  app.appendChild(d);
+  app.appendChild(sp);
 
   // Equipo
-  var q=el('section','tarjeta'); q.appendChild(el('h2',null,t.equipo)); var lc=el('div','contacto');
-  p.contactos.forEach(function(k){
-    var per=el('div','persona'); per.appendChild(el('div','ini',k.nombre.split(' ').map(function(w){return w[0];}).slice(0,2).join('')));
-    var info=el('div'); var nm=el('div',null,k.nombre); nm.style.fontWeight='700'; info.appendChild(nm); var rl=el('div',null,k.rol); rl.style.cssText='font-size:13px;color:var(--suave)'; info.appendChild(rl); per.appendChild(info); lc.appendChild(per);
-    var acc=el('div','acciones');
-    if(k.whatsapp){var w=el('a','boton sec','WhatsApp'); w.href='https://wa.me/'+k.whatsapp; w.target='_blank'; w.rel='noopener'; acc.appendChild(w);}
-    if(k.email){var m=el('a','boton sec','Email'); m.href='mailto:'+k.email; acc.appendChild(m);}
-    if(acc.children.length) lc.appendChild(acc);
+  var sq=el('section','seccion'); sq.appendChild(el('h2',null,SEC.equipo));
+  (p.contactos||[]).forEach(function(k){
+    var r=el('div','persona'); var ini=k.nombre.split(' ').map(function(x){return x[0];}).slice(0,2).join('');
+    r.appendChild(el('div','ini',ini)); var q=el('div','q'); q.appendChild(el('b',null,k.nombre)); q.appendChild(el('small',null,k.rol)); r.appendChild(q);
+    var acc=el('div','acc');
+    if(k.whatsapp){var w=el('a',null,'WhatsApp'); w.href='https://wa.me/'+k.whatsapp; w.target='_blank'; w.rel='noopener'; acc.appendChild(w);}
+    if(k.email){var m=el('a',null,'Email'); m.href='mailto:'+k.email; acc.appendChild(m);}
+    r.appendChild(acc); sq.appendChild(r);
   });
-  q.appendChild(lc); app.appendChild(q);
+  app.appendChild(sq);
+  app.appendChild(pie(t));
 
-  // Actualizar
-  var act=el('div'); act.style.margin='0 16px'; var bu=el('button','boton sec',t.actualizar); bu.type='button';
-  bu.addEventListener('click',function(){act.classList.add('cargando'); pedir(codigoGuardado,function(r){act.classList.remove('cargando'); if(r.ok)pantallaPortal(r.portal); else pantallaAcceso(r.motivo==='inactivo'?t.errInactivo:'');});});
-  act.appendChild(bu); app.appendChild(act);
-
-  app.appendChild(pie(t,p.nmls)); if(!mantener) window.scrollTo(0,0);
+  // Botón fijo para subir
+  var barra=document.getElementById('barra'), sub=document.getElementById('subir');
+  if(p.carpeta){ sub.textContent=t.subir; sub.href=p.carpeta; barra.classList.remove('oculto'); app.className='con-barra'; }
+  else { barra.classList.add('oculto'); app.className=''; }
 }
 
-function pie(t,nmls){var f=el('footer');
-  var pr=el('div',null,t.privado); f.appendChild(pr);
-
+/* ---------- Pie legal ---------- */
+function pie(t){var f=el('footer');
+  f.appendChild(el('div',null,t.privado));
   var d=el('p','disclosure'); d.appendChild(el('strong',null,'Legal Disclosure: '));
   d.appendChild(document.createTextNode('Miami Lending Advisors LLC is a mortgage broker only, not a mortgage lender or mortgage correspondent lender. For informational purposes only. This is not a commitment to lend or extend credit. Information and/or dates are subject to change without notice. All loans are subject to credit approval. As prohibited by federal law, we do not engage in business practices that discriminate based on race, color, religion, national origin, sex, marital status, age, or because all or part of your income may be derived from any public assistance program, or because you have, in good faith, exercised any right under the Consumer Credit Protection Act. By refinancing your existing loan, your total finance charges may be higher over the life of the loan. Disclaimer: Programs subject to change without notice. All borrowers must qualify per program guidelines.'));
   f.appendChild(d);
   f.appendChild(el('div','ny','\u201cNot for use by New York borrowers\u201d'));
-
   var eho=el('div','eho'); eho.setAttribute('role','img'); eho.setAttribute('aria-label','Equal Housing Opportunity');
-  eho.innerHTML='<svg viewBox="0 0 60 64" width="48" height="51" aria-hidden="true"><path d="M30 3 L3 22 V58 H57 V22 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="miter"/><rect x="17" y="30" width="26" height="6" fill="currentColor"/><rect x="17" y="42" width="26" height="6" fill="currentColor"/></svg><div class="eho-t">EQUAL HOUSING<br>OPPORTUNITY</div>';
+  eho.innerHTML='<svg viewBox="0 0 60 64" width="40" height="43" aria-hidden="true"><path d="M30 3 L3 22 V58 H57 V22 Z" fill="none" stroke="currentColor" stroke-width="5"/><rect x="17" y="30" width="26" height="6" fill="currentColor"/><rect x="17" y="42" width="26" height="6" fill="currentColor"/></svg><div class="eho-t">EQUAL HOUSING<br>OPPORTUNITY</div>';
   f.appendChild(eho);
-
-  var lic=el('div','lic');
-  lic.appendChild(document.createTextNode('Licensed by the Florida Office of Financial Regulation | Mortgage Broker | License # MBR6170 NMLS ID # 2467822 | '));
-  var nm=el('a',null,'Click to NMLS Filings'); nm.href='https://www.nmlsconsumeraccess.org/EntityDetails.aspx/COMPANY/2467822'; nm.target='_blank'; nm.rel='noopener'; lic.appendChild(nm);
-  f.appendChild(lic);
-
-  var pl=el('a',null,t.privLink); pl.href='https://miamilendingadvisors.com/privacy-policy/'; pl.target='_blank'; pl.rel='noopener';
-  var pd=el('div','lic'); pd.appendChild(pl); f.appendChild(pd);
+  var lic=el('div','lic'); lic.appendChild(document.createTextNode('Licensed by the Florida Office of Financial Regulation | Mortgage Broker | License # MBR6170 NMLS ID # 2467822 | '));
+  var nm=el('a',null,'Click to NMLS Filings'); nm.href='https://www.nmlsconsumeraccess.org/EntityDetails.aspx/COMPANY/2467822'; nm.target='_blank'; nm.rel='noopener'; lic.appendChild(nm); f.appendChild(lic);
+  var pd=el('div','lic'); var pl=el('a',null,t.privLink); pl.href='https://miamilendingadvisors.com/privacy-policy/'; pl.target='_blank'; pl.rel='noopener'; pd.appendChild(pl); f.appendChild(pd);
   return f;}
 
 pantallaAcceso();
