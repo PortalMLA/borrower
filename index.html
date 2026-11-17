@@ -194,9 +194,9 @@ var T = {
       todos:'Todos',loQueFalta:'Lo que falta',nadaFalta:'En estos bloques no te falta nada. Revisa tus propiedades más abajo.',
       bFalta1:'Falta 1',bFaltanN:'Faltan {n}',completo:'Completo',enRev:'En revisión',bAprob:'{a} de {b} aprobados',
       estados:{'Pendiente':'Pendiente','Revision':'En revisión','Aprobado':'Aprobado'},
-      propsIntro:'Escribe la dirección y el valor aproximado de cada una. Sus documentos están adentro.',otrasSub:'Propiedades que estén a tu nombre.',sinProps:'Si no tienes, no agregues nada.',
+      propsIntro:'Escribe la dirección y el valor aproximado de cada una. Sus documentos están adentro.',otrasSub:'Propiedades que estén a tu nombre.',sinProps:'Si no tienes propiedades aquí, puedes dejar esta parte vacía.',
       direccion:'Dirección completa',valor:'Valor aproximado',phValor:'Ej.: USD 350,000',guardar:'Guardar',editar:'Editar',cancelar:'Cancelar',
-      agregarUS:'+ Agregar propiedad en EE.UU.',agregarOtra:'+ Agregar otra propiedad',agregarBtn:'Agregar propiedad',nueva:'Nueva propiedad',
+      agregarUS:'+ Agregar propiedad en USA',agregarOtra:'+ Agregar otra propiedad',agregarBtn:'Agregar propiedad',nueva:'Nueva propiedad',
       errDir:'Escribe la dirección completa.',errMax:'Ya llegaste al máximo de propiedades. Escríbenos si tienes más.',errGuardar:'No se pudo guardar. Intenta de nuevo.',
       subir:'Subir documentos',privado:'Este portal es privado. No compartas tu link ni tu código.',privLink:'Política de privacidad'},
   en:{titulo:'Your loan portal',intro:'See which documents are missing and where your loan stands.',
@@ -208,16 +208,16 @@ var T = {
       todos:'All',loQueFalta:'Missing',nadaFalta:'Nothing missing in these sections. Check your properties below.',
       bFalta1:'1 missing',bFaltanN:'{n} missing',completo:'Complete',enRev:'In review',bAprob:'{a} of {b} approved',
       estados:{'Pendiente':'Pending','Revision':'In review','Aprobado':'Approved'},
-      propsIntro:'Enter the address and approximate value of each one. Its documents are inside.',otrasSub:'Properties in your name.',sinProps:'If you have none, leave this empty.',
+      propsIntro:'Enter the address and approximate value of each one. Its documents are inside.',otrasSub:'Properties in your name.',sinProps:'If you don’t have any, you can leave this section empty.',
       direccion:'Full address',valor:'Approximate value',phValor:'E.g. USD 350,000',guardar:'Save',editar:'Edit',cancelar:'Cancel',
-      agregarUS:'+ Add a U.S. property',agregarOtra:'+ Add another property',agregarBtn:'Add property',nueva:'New property',
+      agregarUS:'+ Add a property in the USA',agregarOtra:'+ Add another property',agregarBtn:'Add property',nueva:'New property',
       errDir:'Please enter the full address.',errMax:'You have reached the maximum number of properties. Contact us if you have more.',errGuardar:'Could not save. Please try again.',
       subir:'Upload documents',privado:'This portal is private. Do not share your link or code.',privLink:'Privacy Policy'}
 };
 var ETAPAS = ['Solicitud recibida','Reunión de documentos','Enviado al banco','Avalúo y condiciones','Aprobación final','Cierre'];
 var ETAPAS_VER = ['Solicitud recibida','Recopilación de documentos','Análisis de crédito','Avalúo y condiciones','Aprobación final','Cierre'];
 var ETAPAS_EN = ['Application received','Document collection','Underwriting','Appraisal and conditions','Final approval','Closing'];
-var CATEGORIAS_EN = {'Identificación':'Personal Documents','Ingresos':'Income','Fondos':'Assets','Empresa (LLC)':'Corporate Documents (LLC)','Compra':'Purchase','Otras propiedades':'Other Properties','Para firmar':'Documents to Sign'};
+var CATEGORIAS_EN = {'Identificación':'Personal Documents','Ingresos':'Income','Fondos':'Assets','Empresa (LLC)':'Corporate Documents (LLC)','Compra':'Property Purchase','Otras propiedades':'Other Properties','Para firmar':'Documents to Sign'};
 
 function el(tag,clase,texto){var n=document.createElement(tag);if(clase)n.className=clase;if(texto!=null)n.textContent=texto;return n;}
 function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
